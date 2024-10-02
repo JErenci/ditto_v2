@@ -1,52 +1,22 @@
 #################
 ### 1. IMPORT ###
 #################
-## 1.a. IMPORT Libraries               [from dash import Dash]
+## 1.a. Libraries               [from dash import Dash]
 import dash
 from dash import html, dcc
 import secret
 import dash_auth
 
-# import dash_bootstrap_components as dbc
-#
-#
-# ## 1.b. IMPORT Data
-#
-
-################
-### 2. BUILD ###
-################
-## 2.a. Stylesheet              [app = Dash(__name__)]
-# pages_foldername = "pages"
-# external_stylesheets = [dbc.themes.LUX]
+#################
+### 2. DEFINE ###
+#################
+## 2.a. App/server              [app = Dash(__name__), server = app.server]
 app = dash.Dash(
     __name__,
     use_pages=True
 )
 server = app.server
 
-def authorization_function(username, password,
-                           verbose:bool=False):
-    if verbose:
-        print(f'username:{username}, password:{password}')
-
-    if username in list(secret.VALID_USERNAME_PASSWORD_PAIRS.keys()):
-        if verbose:
-            print('Valid key')
-        if password == secret.VALID_USERNAME_PASSWORD_PAIRS[username]:
-            if verbose:
-                print('Valid key-value-pair')
-            return True
-    else:
-        return False
-
-# Using authorization function
-auth = dash_auth.BasicAuth(
-    app=app,
-    auth_func=authorization_function,
-    user_groups=secret.dict_user_groups,
-    secret_key="Test"
-)
 
 ## 2.b. Components              [comp1 = dcc.Markdown("Hello World!"))]
 comp_Welcome = html.Div(
@@ -72,20 +42,38 @@ app.layout = html.Div(
     ]
 )
 
-################
-## 3. DEFINE ###
-################
-## 3.a. Variables/server    [pages_foldername = "pages"]
+## 2.d. Callback                [@app.callback(Output,Input,State)]
 
-## 3.b. Callback                [@app.callback(Output,Input,State)]
+## 2.d. Functions               [def function(input)]
+def authorization_function(username, password,
+                           verbose:bool=False):
+    if verbose:
+        print(f'username:{username}, password:{password}')
 
-## 3.c. Callback functions      [def function(input)]
+    if username in list(secret.VALID_USERNAME_PASSWORD_PAIRS.keys()):
+        if verbose:
+            print('Valid key')
+        if password == secret.VALID_USERNAME_PASSWORD_PAIRS[username]:
+            if verbose:
+                print('Valid key-value-pair')
+            return True
+    else:
+        return False
+
+## 2.f. Logic                   []
+# Using authorization function
+auth = dash_auth.BasicAuth(
+    app=app,
+    auth_func=authorization_function,
+    user_groups=secret.dict_user_groups,
+    secret_key="Test"
+)
 
 
 # ##############
-# ### 4. RUN ###
+# ### 3. RUN ###
 # ##############
-## 4.a. Application             [if __name__ == '__main__': app.run()]
+## 3.a. Application             [if __name__ == '__main__': app.run()]
 if __name__ == "__main__":
     app.run(
         debug=True,
