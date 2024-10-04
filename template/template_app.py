@@ -4,6 +4,7 @@
 ## 1.a. IMPORT Libraries               [from dash import Dash]
 import dash
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 
 ## 1.b. IMPORT Data
 
@@ -14,7 +15,9 @@ from dash import html, dcc
 ## 2.a. Stylesheet              [app = Dash(__name__)]
 app = dash.Dash(
     __name__,
-    use_pages=True
+    use_pages=True,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}], # Responsive to MOBILE
 )
 
 ## 2.b. Components              [comp1 = dcc.Markdown("Hello World!"))]
@@ -23,9 +26,9 @@ comp_PageReg = html.Div([
     dcc.Link(page['name'] + "  |  ", href=page['path'])
     for page in dash.page_registry.values()
 ])
-comp_separator = html.Hr()
-comp_pageCtr = dash.page_container
-
+comp_separator = html.Hr()                          # Layout Component for separator
+comp_pageCtr   = dash.page_container                # Layout Component for muti-page menu
+comp_emptyFig  = dcc.Graph(id='figure', figure={})  # Layout Component for empty figure
 
 
 # 2.c. Layout                  [app.layout = dbc.Container(comp1)]
@@ -99,8 +102,8 @@ app.layout = html.Div(
 # # print(f'4{pages_foldername}')
 # #
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # START THE APP (using Flask under the hood)
     app.run(
         debug=True,
-        port=8051
+        port=8051,
     )

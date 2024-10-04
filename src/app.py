@@ -10,6 +10,7 @@ import dash
 from dash import html, dcc
 import secret
 from dash import Input, Output, State, callback, dash_table
+import dash_bootstrap_components as dbc
 import pandas as pd
 import dash_auth
 
@@ -20,7 +21,9 @@ import dash_auth
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(
     __name__,
-    external_stylesheets=external_stylesheets,
+    # external_stylesheets=external_stylesheets,
+    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    meta_tags=[{'name': 'viewport', 'content': 'width=device-width, initial-scale=1.0'}],  # Responsive to MOBILE
     use_pages=True
 )
 server = app.server
