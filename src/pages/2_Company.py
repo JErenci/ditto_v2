@@ -90,7 +90,7 @@ layout = dbc.Container(
         # dcc.Markdown('# This will be the content of Page Company'),
         html.Div(id='image_customer', children=''),
         dbc.Row(
-            dbc.Col(html.H1("Stock Market Dashboard",
+            dbc.Col(html.H1("Customer map",
                             className='text-center text-primary',),
                     width=12)
         ),
