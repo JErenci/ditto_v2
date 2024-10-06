@@ -9,7 +9,6 @@ import pandas as pd
 from dash import html
 import sys
 
-
 import folium.plugins
 
 sys.path.append('/Users/User/PycharmProjects/ditto_v2/')

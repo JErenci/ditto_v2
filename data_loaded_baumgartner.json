@@ -1,0 +1,15 @@
+{
+  "name": "Baumgartner",
+  "icon": "assets/icon_transparent.png",
+  "web": "https://www.gaertnerei-baumgartner.de/",
+  "address": "H\u00f6henstra\u00dfe 101, 88142 Wasserburg",
+  "locations":
+  {
+    "Home": {"lat": 47.5618, "lon": 9.6662, "address": "Enzisweilerstr 19c 88131 Lindau"},
+    "Lager": {"lat": 47.5648, "lon": 9.6549, "address": "H\u00f6henstra\u00dfe 101 \n 88142 Wasserburg"}
+  },
+  "customers":
+  {
+    "0": {"firstname": "Anna", "lastname": "Smith", "path_image_user": "assets/anna_smith.png"}
+  }
+}
