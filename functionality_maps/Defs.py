@@ -77,7 +77,7 @@ company = {
 # company = {
 #     'name': 'Baumgartner',
 #     # 'map' : 'company',
-#     'icon': 'Assets\Baumgartner\Company\icon_transparent.png',
+#     'icon': 'Assets\Baumgartner\Company\logo.png',
 #     'web' : 'https://www.gaertnerei-baumgartner.de/',
 #     'locations': {
 #         'Home': {
@@ -106,7 +106,7 @@ company = {
 # qr_string_cust = f'{id}_{name_cust}'
 #
 # ## PATHS COMPANY ##
-# path_image_firma = 'Assets/Baumgartner/Company/icon_transparent.png'
+# path_image_firma = 'Assets/Baumgartner/Company/logo.png'
 
 # qr_string_user  = 'Baumb'
 # qr_image_user = '.png'

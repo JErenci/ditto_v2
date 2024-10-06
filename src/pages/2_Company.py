@@ -10,10 +10,10 @@ import sys
 sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
 from functionality_maps import Maps
 from functionality_maps import paths
-# import Maps
-# C:\Users\User\PycharmProjects\ditto_v2
-# sys.path.insert(1, '/functionality_maps')
-# .Maps. import load_gdf_from_csv, write_map_temp, get_folium_map_countries, get_feature_group_countries
+
+from assets import run_relevant_variables
+company_name = run_relevant_variables.company_name
+file_used = run_relevant_variables.file_used
 
 dash.register_page(__name__)
 
@@ -29,7 +29,7 @@ pdf_d3 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[3]])
 pdf_d4 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[4]])
 pdf_zips = pdf_d4['postcode']  # For indexing
 
-d_company = 'D1tt0'
+company_name = 'D1tt0'
 
 comp_dropCountry = dcc.Dropdown(
                     id='dropdown_country_filter0',
@@ -90,7 +90,7 @@ layout = dbc.Container(
         # dcc.Markdown('# This will be the content of Page Company'),
         html.Div(id='image_customer', children=''),
         dbc.Row(
-            dbc.Col(html.H1("Stock Market Dashboard",
+            dbc.Col(html.H1("World Dashboard",
                             className='text-center text-primary',),
                     width=12)
         ),
@@ -109,7 +109,7 @@ layout = dbc.Container(
             ], width={'size': 7}),
         ], justify='start'),  # Horizontal:start,center,end,between,around
     ],
-    # fluid=True,     # Stretch to use all screen
+    fluid=True,     # Stretch to use all screen
 )
 
 @callback(
@@ -230,21 +230,20 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
 
         # company = request.authorization['username']
         # print(f'company: {company}')
-        # # d_company = Defs.company[company]
+        # # company_name = Defs.company[company]
         # try:
         #     path = f'data_loaded_{company}.json'
         #     print(f'path={path}')
-        #     # d_company = json.loads(path)
-        #     d_company = Maps.read_dict_temp(path)
-        #     print(f'd_company: {d_company}')
+        #     # company_name = json.loads(path)
+        #     company_name = Maps.read_dict_temp(path)
+        #     print(f'company_name: {company_name}')
         # except Exception as ex:
         #     print(ex)
 
-        company = Maps.try_read_dict_temp()[0]
+        # company = Maps.try_read_dict_temp()[0]
 
-        fm = Maps.get_folium_map_countries(l_fg,
-                                           d_company=Maps.read_dict_temp(f'data_loaded.json')
-                                           )
+
+        fm = Maps.get_folium_map_countries(l_fg,d_company=Maps.read_dict_temp(file_used))
         # fm = folium.Map()
 
         print(f'fm:{fm}, type:{type(fm)}')

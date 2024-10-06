@@ -1,0 +1,14 @@
+{
+  "name": "D1tt0",
+  "icon": "assets/Vaude/D1tt0/logo.png",
+  "web": "https://www.D1tt0.de/",
+  "address": "Nobelstr 8, 88131 Lindau (B)",
+  "locations":
+  {
+    "Headquarters": {"lat": 47.55749887662212, "lon": 9.7185406387649, "address": "Headquarters"}
+  },
+  "customers":
+  {
+    "0": {"firstname": "Anna", "lastname": "Smith", "path_image_user": "assets/anna_smith.png"}
+  }
+}

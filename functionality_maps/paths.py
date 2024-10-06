@@ -1,6 +1,6 @@
 import folium
 
-# company['icon']= f'Assets\{company["name"]}\Company\icon_transparent.png'
+# company['icon']= f'Assets\{company["name"]}\Company\logo.png'
 
 
 path_map_empty ='assets/Geo/Map_empty.html'

@@ -1,0 +1,109 @@
+{
+  "name" : "SportScheck",
+  "Branch" : {
+    "Aachen": {
+      "Name" : "SportScheck Aachen",
+      "Address" : "Aquis Plaza, Adalbertstraße 100 52062 Aachen"
+    },
+    "Berlin-Schöneberg" : {
+      "Name" : "SportScheck Berlin-Schöneberg",
+      "Address" : "Tauentzienstraße 5 10789 Berlin"
+    },
+    "Berlin-Steglitz: ":{
+      "Name" : "SportScheck Berlin-Steglitz",
+      "Address" : "Schloßstraße 7-10 12163 Berlin"
+    }, 
+    "Bielefeld":{
+      "Name" : "SportScheck Bielefeld",
+      "Address" : "Bahnhofstraße 1 33602 Bielefeld"
+    }, 
+    "Bonn":{
+      "Name" : "SportScheck Bonn",
+      "Address" : "Remigiussstraße 6-8 53111 Bonn"
+    }, 
+    "Braunschweig":{
+      "Name" : "SportScheck Braunschweig",
+      "Address" : "Damm 5 38100 Braunschweig"
+    }, 
+    "Dortmund":{
+      "Name" : "SportScheck Dortmund",
+      "Address" : "Hansaplatz 1 44137 Dortmund"
+    }, 
+    "Dresden Altmarkt-Galerie":{
+      "Name" : "SportScheck Dresden Altmarkt-Galerie",
+      "Address" : "Webergasse 1 01067 Dresden"
+    }, 
+    "Dresden Centrum-Galerie":{
+      "Name" : "SportScheck Dresden Centrum-Galerie",
+      "Address" : "Pragerstraße 15 01069 Dresden"
+    }, 
+    "Erfurt":{
+      "Name" : "SportScheck Erfurt",
+      "Address" : "Anger 2 99084 Erfurt"
+    }, 
+    "Frankfurt":{
+      "Name" : "SportScheck Frankfurt",
+      "Address" : "Schaefergasse 10\n\n60313 Frankfurt"
+    }, 
+    "Göttingen":{
+      "Name" : "SportScheck Göttingen",
+      "Address" : "SportScheck Göttingen\n\nKornmarkt 12-16"
+    }, 
+    "Hamburg-Altstadt":{
+      "Name" : "SportScheck Hamburg-Altstadt",
+      "Address" : "Moenckebergstraße 18 \n\n20095 Hamburg"
+    }, 
+    "Hamburg-Harburg":{
+      "Name" : "SportScheck Hamburg-Harburg",
+      "Address" : "Phoenix Center \n\nHannoverschestraße 86\n\n21079 Hamburg"
+    }, 
+    "Hannover-Mitte":{
+      "Name" : "SportScheck Hannover-Mitte",
+      "Address" : "Moenckebergstraße 18 \n\n20095 Hamburg"
+    }, 
+    "Hannover Osterstraße":{
+      "Name" : "SportScheck Hannover Osterstraße",
+      "Address" : "N/A"
+    },
+    "Karlsruhe":{
+      "Name" : "SportScheck Karlsruhe",
+      "Address" : "Kaiserstraße 92\n\n76133 Karlsruhe"
+    }, 
+    "Konstanz":{
+      "Name" : "SportScheck Konstanz",
+      "Address" : "LAGO Shopping Center\n\nBodanstraße 1-3\n\n78462 Konstanz"
+    }, 
+    "Köln":{
+      "Name" : "SportScheck Köln",
+      "Address" : "Schildergasse 38 - 42\n\n50667 Köln"
+    }, 
+    "Leipzig":{
+      "Name" : "SportScheck Leipzig",
+      "Address" : "N/A, Wir ziehen um!\n\nDemnächst findest du uns in der Hainstraße."
+    }, 
+    "Magdeburg":{
+      "Name" : "SportScheck Magdeburg",
+      "Address" : "Allee-Center\n\nErnst-Reuter-Allee 11\n\n39104 Magdeburg"
+    }, 
+    "Mönchengladbach":{
+      "Name" : "SportScheck Mönchengladbach",
+      "Address" : "Minto Center\n\nHindenburgstraße 73\n\n41061 Mönchengladbach"
+    }, 
+    "Münster":{
+      "Name" : "SportScheck Münster",
+      "Address" : "Stubengasse 25\n\n48143 Münster"
+    }, 
+    "Nürnberg":{
+      "Name" : "SportScheck Nürnberg",
+      "Address" : "Am Ludwigsplatz 4-10\n\n90403 Nürnberg"
+    }, 
+    "Stuttgart":{
+      "Name" : "SportScheck Stuttgart",
+      "Address" : "Ecke Königstraße\n\nKronenstraße 3\n\n70173 Stuttgart"
+    }, 
+    "Wildau":{
+      "Name" : "SportScheck Wildau",
+      "Address" : "Im A10-Center \n\nChausseestraße 1\n\n15745 Wildau"
+    }
+  }
+}
