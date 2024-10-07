@@ -9,9 +9,7 @@ import io
 import dash
 from dash import html, dcc
 import secret
-from dash import Input, Output, State, callback, dash_table
 import dash_bootstrap_components as dbc
-import pandas as pd
 import dash_auth
 
 
