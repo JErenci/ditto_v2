@@ -154,9 +154,9 @@ import sys
 
 import folium.plugins
 
-sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
-from functionality_maps import Defs
-from functionality_maps import paths
+# sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
+# from functionality_maps import Defs
+# from functionality_maps import paths
 
 
 def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
