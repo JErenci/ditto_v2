@@ -1,0 +1,40 @@
+Erscheinungsmonat: September 2024
+
+Ihr Kontakt zu uns:
+www.destatis.de/kontakt
+
+
+(c) Daten (im Auftrag der Herausgebergemeinschaft Statistische Ämter des Bundes und der Länder)
+    Statistisches Bundesamt (Destatis), 2024
+    Vervielfältigung und Verbreitung, auch auszugsweise, mit Quellenangabe gestattet.
+    
+
+Die Bevölkerungsangaben basieren für alle Bundesländer auf dem Stichtag 31.12.2023 (ZENSUS 2011).
+
+Die Ergebnisse ab Berichtsjahr 2016 sind aufgrund methodischer Änderungen und technischer 
+Weiterentwicklung nur bedingt mit den Vorjahreswerten vergleichbar. Erläuterungen dazu finden 
+Sie unter www.destatis.de beim Bevölkerungsstand.
+
+
+Die Flächenangaben basieren für folgende Bundesländer (mit Länderschlüssel) auf dem Stichtag 31.12.2023:
+01 Schleswig-Holstein
+02 Hamburg
+04 Bremen
+08 Baden-Württemberg
+09 Bayern
+10 Saarland
+13 Mecklenburg-Vorpommern
+14 Sachsen
+Für alle übrigen Bundesländer auf dem Stichtag 31.12.2022.
+
+Aufgrund fachlicher und methodischer Umstellungen in der Vermessungsverwaltung 
+auf das "Amtliche Liegenschaftskataster-Informationssystem" (ALKIS®) ist der 
+Vergleich der Flächendaten ab 2014 mit den Flächendaten vorangegangener 
+Jahre nur eingeschränkt möglich.		
+
+Abweichungen zu den Fläche- und Bevölkerungsangaben zur letzten
+Ausgabe des GV100AD sind bei den Gemeinden möglich,
+deren Fläche und/oder Bevölkerung im Zuge einer Gebietsänderung geändert wurde(n).
+
+Durch die Aufname der sorbischen Schreibweise in den amtlichen Gemeindenamen ist es 
+notwendig geworden, die Daten mit UTF-8 zu kodieren.
