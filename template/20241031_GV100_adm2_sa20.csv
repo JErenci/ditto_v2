@@ -1,0 +1,30 @@
+,EF1_Satzart,EF2_Gebietstand,EF3_ARS,EF4_Verband,EF5_Verbandsbezeichnung,EF6_Sitz_des_Verbandes,EF7_Schlüsselfelder,EF8_Leer,EF9_Frei für landesinterne Angaben,BL_nr,BL_name
+1298,20,20241031,031,,Statistische Region Braunschweig,,,,,3,Niedersachsen
+1568,20,20241031,032,,Statistische Region Hannover,,,,,3,Niedersachsen
+1879,20,20241031,033,,Statistische Region Lüneburg,,,,,3,Niedersachsen
+2331,20,20241031,034,,Statistische Region Weser-Ems,,,,,3,Niedersachsen
+2747,20,20241031,051,,Reg.-Bez. Düsseldorf,Düsseldorf,,,,5,Nordrhein-Westfalen
+2895,20,20241031,053,,Reg.-Bez. Köln,Köln,,,,5,Nordrhein-Westfalen
+3105,20,20241031,055,,Reg.-Bez. Münster,Münster,,,,5,Nordrhein-Westfalen
+3270,20,20241031,057,,Reg.-Bez. Detmold,Detmold,,,,5,Nordrhein-Westfalen
+3418,20,20241031,059,,Reg.-Bez. Arnsberg,Arnsberg,,,,5,Nordrhein-Westfalen
+3598,20,20241031,064,,Reg.-Bez. Darmstadt,Darmstadt,,,,6,Hessen
+3985,20,20241031,065,,Reg.-Bez. Gießen,Gießen,,,,6,Hessen
+4193,20,20241031,066,,Reg.-Bez. Kassel,Kassel,,,,6,Hessen
+4480,20,20241031,071,,früher: Reg.-Bez. Koblenz,"Koblenz, Stadt",,,,7,Rheinland-Pfalz
+5671,20,20241031,072,,früher: Reg.-Bez. Trier,"Trier, Stadt",,,,7,Rheinland-Pfalz
+6254,20,20241031,073,,früher: Reg.-Bez. Rheinhessen-Pfalz,"Neustadt a. d. Weinstraße, Stadt",,,,7,Rheinland-Pfalz
+6991,20,20241031,081,,Reg.-Bez. Stuttgart,Stuttgart,,,,8,Baden-Württemberg
+7506,20,20241031,082,,Reg.-Bez. Karlsruhe,Karlsruhe,,,,8,Baden-Württemberg
+7842,20,20241031,083,,Reg.-Bez. Freiburg,Freiburg im Breisgau,,,,8,Baden-Württemberg
+8260,20,20241031,084,,Reg.-Bez. Tübingen,Tübingen,,,,8,Baden-Württemberg
+8617,20,20241031,091,,Oberbayern,München,,,,9,Bayern
+9558,20,20241031,092,,Niederbayern,Landshut,,,,9,Bayern
+10052,20,20241031,093,,Oberpfalz,Regensburg,,,,9,Bayern
+10462,20,20241031,094,,Oberfranken,Bayreuth,,,,9,Bayern
+10929,20,20241031,095,,Mittelfranken,Ansbach,,,,9,Bayern
+11349,20,20241031,096,,Unterfranken,Würzburg,,,,9,Bayern
+11947,20,20241031,097,,Schwaben,Augsburg,,,,9,Bayern
+14097,20,20241031,145,,früher: Direktionsbezirk Chemnitz,Chemnitz,,,,14,Sachsen
+14424,20,20241031,146,,früher: Direktionsbezirk Dresden,Chemnitz,,,,14,Sachsen
+14724,20,20241031,147,,früher: Direktionsbezirk Leipzig,Chemnitz,,,,14,Sachsen

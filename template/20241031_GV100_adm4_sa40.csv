@@ -1,0 +1,401 @@
+,EF1_Satzart,EF2_Gebietstand,EF3_ARS,EF4_Verband,EF5_Verbandsbezeichnung,EF6_Sitz_des_Verbandes,EF7_Schlüsselfelder,EF8_Leer,EF9_Frei für landesinterne Angaben,BL_nr,BL_name
+1,40,20241031,01001,,"Flensburg, Stadt",Flensburg,41.0,,,1,Schleswig-Holstein
+4,40,20241031,01002,,"Kiel, Landeshauptstadt",Kiel,41.0,,,1,Schleswig-Holstein
+7,40,20241031,01003,,"Lübeck, Hansestadt",Lübeck,41.0,,,1,Schleswig-Holstein
+10,40,20241031,01004,,"Neumünster, Stadt",Neumünster,41.0,,,1,Schleswig-Holstein
+13,40,20241031,01051,,Dithmarschen,Heide,43.0,,,1,Schleswig-Holstein
+138,40,20241031,01053,,Herzogtum Lauenburg,Ratzeburg,43.0,,,1,Schleswig-Holstein
+287,40,20241031,01054,,Nordfriesland,Husum,43.0,,,1,Schleswig-Holstein
+434,40,20241031,01055,,Ostholstein,Eutin,43.0,,,1,Schleswig-Holstein
+492,40,20241031,01056,,Pinneberg,Elmshorn,43.0,,,1,Schleswig-Holstein
+560,40,20241031,01057,,Plön,Plön,43.0,,,1,Schleswig-Holstein
+659,40,20241031,01058,,Rendsburg-Eckernförde,Rendsburg,43.0,,,1,Schleswig-Holstein
+844,40,20241031,01059,,Schleswig-Flensburg,Schleswig,43.0,,,1,Schleswig-Holstein
+986,40,20241031,01060,,Segeberg,Bad Segeberg,43.0,,,1,Schleswig-Holstein
+1099,40,20241031,01061,,Steinburg,Itzehoe,43.0,,,1,Schleswig-Holstein
+1221,40,20241031,01062,,Stormarn,Bad Oldesloe,43.0,,,1,Schleswig-Holstein
+1294,40,20241031,02000,,"Hamburg, Freie und Hansestadt",Hamburg,41.0,,,2,Hamburg
+1299,40,20241031,03101,,"Braunschweig, Stadt",Braunschweig,41.0,,,3,Niedersachsen
+1302,40,20241031,03102,,"Salzgitter, Stadt",Salzgitter,41.0,,,3,Niedersachsen
+1305,40,20241031,03103,,"Wolfsburg, Stadt",Wolfsburg,41.0,,,3,Niedersachsen
+1308,40,20241031,03151,,Gifhorn,Gifhorn,44.0,,,3,Niedersachsen
+1362,40,20241031,03153,,Goslar,Goslar,44.0,,,3,Niedersachsen
+1379,40,20241031,03154,,Helmstedt,Helmstedt,44.0,,,3,Niedersachsen
+1421,40,20241031,03155,,Northeim,Northeim,44.0,,,3,Niedersachsen
+1446,40,20241031,03157,,Peine,Peine,44.0,,,3,Niedersachsen
+1461,40,20241031,03158,,Wolfenbüttel,Wolfenbüttel,44.0,,,3,Niedersachsen
+1507,40,20241031,03159,,Göttingen,Göttingen,44.0,,,3,Niedersachsen
+1569,40,20241031,03241,,Region Hannover,Hannover,44.0,,,3,Niedersachsen
+1612,40,20241031,03251,,Diepholz,Diepholz,44.0,,,3,Niedersachsen
+1673,40,20241031,03252,,Hameln-Pyrmont,Hameln,44.0,,,3,Niedersachsen
+1690,40,20241031,03254,,Hildesheim,Hildesheim,44.0,,,3,Niedersachsen
+1729,40,20241031,03255,,Holzminden,Holzminden,44.0,,,3,Niedersachsen
+1782,40,20241031,03256,,Nienburg (Weser),Nienburg (Weser),44.0,,,3,Niedersachsen
+1828,40,20241031,03257,,Schaumburg,Stadthagen,44.0,,,3,Niedersachsen
+1880,40,20241031,03351,,Celle,Celle,44.0,,,3,Niedersachsen
+1914,40,20241031,03352,,Cuxhaven,Cuxhaven,44.0,,,3,Niedersachsen
+1954,40,20241031,03353,,Harburg,Winsen/Luhe,44.0,,,3,Niedersachsen
+2009,40,20241031,03354,,Lüchow-Dannenberg,"Lüchow, Wendland",44.0,,,3,Niedersachsen
+2044,40,20241031,03355,,Lüneburg,Lüneburg,44.0,,,3,Niedersachsen
+2099,40,20241031,03356,,Osterholz,Osterholz-Scharmbeck,44.0,,,3,Niedersachsen
+2118,40,20241031,03357,,Rotenburg (Wümme),Rotenburg/Wümme,44.0,,,3,Niedersachsen
+2189,40,20241031,03358,,Heidekreis,Bad Fallingbostel,44.0,,,3,Niedersachsen
+2225,40,20241031,03359,,Stade,Stade,44.0,,,3,Niedersachsen
+2277,40,20241031,03360,,Uelzen,Uelzen,44.0,,,3,Niedersachsen
+2311,40,20241031,03361,,Verden,Verden (Aller),44.0,,,3,Niedersachsen
+2332,40,20241031,03401,,"Delmenhorst, Stadt",Delmenhorst,41.0,,,3,Niedersachsen
+2335,40,20241031,03402,,"Emden, Stadt",Emden/Ostfriesland,41.0,,,3,Niedersachsen
+2338,40,20241031,03403,,"Oldenburg (Oldenburg), Stadt",Oldenburg/Oldenburg,41.0,,,3,Niedersachsen
+2341,40,20241031,03404,,"Osnabrück, Stadt",Osnabrück,41.0,,,3,Niedersachsen
+2344,40,20241031,03405,,"Wilhelmshaven, Stadt",Wilhelmshaven,41.0,,,3,Niedersachsen
+2347,40,20241031,03451,,Ammerland,Westerstede,44.0,,,3,Niedersachsen
+2360,40,20241031,03452,,Aurich,Aurich,44.0,,,3,Niedersachsen
+2402,40,20241031,03453,,Cloppenburg,Cloppenburg,44.0,,,3,Niedersachsen
+2429,40,20241031,03454,,Emsland,Meppen,44.0,,,3,Niedersachsen
+2509,40,20241031,03455,,Friesland,Jever,44.0,,,3,Niedersachsen
+2526,40,20241031,03456,,Grafschaft Bentheim,Nordhorn,44.0,,,3,Niedersachsen
+2559,40,20241031,03457,,Leer,Leer/Ostfriesland,44.0,,,3,Niedersachsen
+2593,40,20241031,03458,,Oldenburg,Wildeshausen,44.0,,,3,Niedersachsen
+2617,40,20241031,03459,,Osnabrück,Osnabrück,44.0,,,3,Niedersachsen
+2673,40,20241031,03460,,Vechta,Vechta,44.0,,,3,Niedersachsen
+2694,40,20241031,03461,,Wesermarsch,Brake/Unterweser,44.0,,,3,Niedersachsen
+2713,40,20241031,03462,,Wittmund,Wittmund,44.0,,,3,Niedersachsen
+2740,40,20241031,04011,,"Bremen, Stadt",Bremen,41.0,,,4,Bremen
+2743,40,20241031,04012,,"Bremerhaven, Stadt",Bremerhaven,41.0,,,4,Bremen
+2748,40,20241031,05111,,"Düsseldorf, Stadt",Düsseldorf,41.0,,,5,Nordrhein-Westfalen
+2751,40,20241031,05112,,"Duisburg, Stadt",Duisburg,41.0,,,5,Nordrhein-Westfalen
+2754,40,20241031,05113,,"Essen, Stadt",Essen,41.0,,,5,Nordrhein-Westfalen
+2757,40,20241031,05114,,"Krefeld, Stadt",Krefeld,41.0,,,5,Nordrhein-Westfalen
+2760,40,20241031,05116,,"Mönchengladbach, Stadt",Mönchengladbach,41.0,,,5,Nordrhein-Westfalen
+2763,40,20241031,05117,,"Mülheim an der Ruhr, Stadt",Mülheim an der Ruhr,41.0,,,5,Nordrhein-Westfalen
+2766,40,20241031,05119,,"Oberhausen, Stadt",Oberhausen,41.0,,,5,Nordrhein-Westfalen
+2769,40,20241031,05120,,"Remscheid, Stadt",Remscheid,41.0,,,5,Nordrhein-Westfalen
+2772,40,20241031,05122,,"Solingen, Klingenstadt",Solingen,41.0,,,5,Nordrhein-Westfalen
+2775,40,20241031,05124,,"Wuppertal, Stadt",Wuppertal,41.0,,,5,Nordrhein-Westfalen
+2778,40,20241031,05154,,Kleve,Kleve,43.0,,,5,Nordrhein-Westfalen
+2811,40,20241031,05158,,Mettmann,Mettmann,43.0,,,5,Nordrhein-Westfalen
+2832,40,20241031,05162,,Rhein-Kreis Neuss,Neuss,43.0,,,5,Nordrhein-Westfalen
+2849,40,20241031,05166,,Viersen,Viersen,43.0,,,5,Nordrhein-Westfalen
+2868,40,20241031,05170,,Wesel,Wesel,43.0,,,5,Nordrhein-Westfalen
+2896,40,20241031,05314,,"Bonn, Stadt",Bonn,41.0,,,5,Nordrhein-Westfalen
+2899,40,20241031,05315,,"Köln, Stadt",Köln,41.0,,,5,Nordrhein-Westfalen
+2902,40,20241031,05316,,"Leverkusen, Stadt",Leverkusen,41.0,,,5,Nordrhein-Westfalen
+2905,40,20241031,05334,,Städteregion Aachen,Aachen,43.0,,,5,Nordrhein-Westfalen
+2926,40,20241031,05358,,Düren,Düren,43.0,,,5,Nordrhein-Westfalen
+2957,40,20241031,05362,,Rhein-Erft-Kreis,Bergheim,43.0,,,5,Nordrhein-Westfalen
+2978,40,20241031,05366,,Euskirchen,Euskirchen,43.0,,,5,Nordrhein-Westfalen
+3001,40,20241031,05370,,Heinsberg,Heinsberg,43.0,,,5,Nordrhein-Westfalen
+3022,40,20241031,05374,,Oberbergischer Kreis,Gummersbach,43.0,,,5,Nordrhein-Westfalen
+3049,40,20241031,05378,,Rheinisch-Bergischer Kreis,Bergisch Gladbach,43.0,,,5,Nordrhein-Westfalen
+3066,40,20241031,05382,,Rhein-Sieg-Kreis,Siegburg,43.0,,,5,Nordrhein-Westfalen
+3106,40,20241031,05512,,"Bottrop, Stadt",Bottrop,41.0,,,5,Nordrhein-Westfalen
+3109,40,20241031,05513,,"Gelsenkirchen, Stadt",Gelsenkirchen,41.0,,,5,Nordrhein-Westfalen
+3112,40,20241031,05515,,"Münster, Stadt",Münster,41.0,,,5,Nordrhein-Westfalen
+3115,40,20241031,05554,,Borken,Borken,43.0,,,5,Nordrhein-Westfalen
+3150,40,20241031,05558,,Coesfeld,Coesfeld,43.0,,,5,Nordrhein-Westfalen
+3173,40,20241031,05562,,Recklinghausen,Recklinghausen,43.0,,,5,Nordrhein-Westfalen
+3194,40,20241031,05566,,Steinfurt,Steinfurt,43.0,,,5,Nordrhein-Westfalen
+3243,40,20241031,05570,,Warendorf,Warendorf,43.0,,,5,Nordrhein-Westfalen
+3271,40,20241031,05711,,"Bielefeld, Stadt",Bielefeld,41.0,,,5,Nordrhein-Westfalen
+3274,40,20241031,05754,,Gütersloh,Gütersloh,43.0,,,5,Nordrhein-Westfalen
+3301,40,20241031,05758,,Herford,Herford,43.0,,,5,Nordrhein-Westfalen
+3320,40,20241031,05762,,Höxter,Höxter,43.0,,,5,Nordrhein-Westfalen
+3341,40,20241031,05766,,Lippe,Detmold,43.0,,,5,Nordrhein-Westfalen
+3374,40,20241031,05770,,Minden-Lübbecke,Minden,43.0,,,5,Nordrhein-Westfalen
+3397,40,20241031,05774,,Paderborn,Paderborn,43.0,,,5,Nordrhein-Westfalen
+3419,40,20241031,05911,,"Bochum, Stadt",Bochum,41.0,,,5,Nordrhein-Westfalen
+3422,40,20241031,05913,,"Dortmund, Stadt",Dortmund,41.0,,,5,Nordrhein-Westfalen
+3425,40,20241031,05914,,"Hagen, Stadt der FernUniversität",Hagen,41.0,,,5,Nordrhein-Westfalen
+3428,40,20241031,05915,,"Hamm, Stadt",Hamm,41.0,,,5,Nordrhein-Westfalen
+3431,40,20241031,05916,,"Herne, Stadt",Herne,41.0,,,5,Nordrhein-Westfalen
+3434,40,20241031,05954,,Ennepe-Ruhr-Kreis,Schwelm,43.0,,,5,Nordrhein-Westfalen
+3453,40,20241031,05958,,Hochsauerlandkreis,Meschede,43.0,,,5,Nordrhein-Westfalen
+3478,40,20241031,05962,,Märkischer Kreis,Lüdenscheid,43.0,,,5,Nordrhein-Westfalen
+3509,40,20241031,05966,,Olpe,Olpe,43.0,,,5,Nordrhein-Westfalen
+3524,40,20241031,05970,,Siegen-Wittgenstein,Siegen,43.0,,,5,Nordrhein-Westfalen
+3547,40,20241031,05974,,Soest,Soest,43.0,,,5,Nordrhein-Westfalen
+3576,40,20241031,05978,,Unna,Unna,43.0,,,5,Nordrhein-Westfalen
+3599,40,20241031,06411,,"Darmstadt, Wissenschaftsstadt",Darmstadt,41.0,,,6,Hessen
+3602,40,20241031,06412,,"Frankfurt am Main, Stadt",Frankfurt am Main,41.0,,,6,Hessen
+3605,40,20241031,06413,,"Offenbach am Main, Stadt",Offenbach am Main,41.0,,,6,Hessen
+3608,40,20241031,06414,,"Wiesbaden, Landeshauptstadt",Wiesbaden,41.0,,,6,Hessen
+3611,40,20241031,06431,,Bergstraße,Heppenheim,44.0,,,6,Hessen
+3658,40,20241031,06432,,Darmstadt-Dieburg,Darmstadt,44.0,,,6,Hessen
+3705,40,20241031,06433,,Groß-Gerau,Groß-Gerau,44.0,,,6,Hessen
+3734,40,20241031,06434,,Hochtaunuskreis,Bad Homburg v. d. Höhe,44.0,,,6,Hessen
+3761,40,20241031,06435,,Main-Kinzig-Kreis,Gelnhausen,44.0,,,6,Hessen
+3822,40,20241031,06436,,Main-Taunus-Kreis,Hofheim a. T.,44.0,,,6,Hessen
+3847,40,20241031,06437,,Odenwaldkreis,Erbach,44.0,,,6,Hessen
+3872,40,20241031,06438,,Offenbach,Dietzenbach,44.0,,,6,Hessen
+3899,40,20241031,06439,,Rheingau-Taunus-Kreis,Bad Schwalbach,44.0,,,6,Hessen
+3934,40,20241031,06440,,Wetteraukreis,Friedberg (Hessen),44.0,,,6,Hessen
+3986,40,20241031,06531,,Gießen,Gießen,44.0,,,6,Hessen
+4023,40,20241031,06532,,Lahn-Dill-Kreis,Wetzlar,44.0,,,6,Hessen
+4070,40,20241031,06533,,Limburg-Weilburg,Limburg a. d. Lahn,44.0,,,6,Hessen
+4109,40,20241031,06534,,Marburg-Biedenkopf,Marburg,44.0,,,6,Hessen
+4154,40,20241031,06535,,Vogelsbergkreis,Lauterbach,44.0,,,6,Hessen
+4194,40,20241031,06611,,"Kassel, documenta-Stadt",Kassel,41.0,,,6,Hessen
+4197,40,20241031,06631,,Fulda,Fulda,44.0,,,6,Hessen
+4244,40,20241031,06632,,Hersfeld-Rotenburg,Bad Hersfeld,44.0,,,6,Hessen
+4285,40,20241031,06633,,Kassel,Kassel,44.0,,,6,Hessen
+4344,40,20241031,06634,,Schwalm-Eder-Kreis,Homberg (Efze),44.0,,,6,Hessen
+4399,40,20241031,06635,,Waldeck-Frankenberg,Korbach,44.0,,,6,Hessen
+4442,40,20241031,06636,,Werra-Meißner-Kreis,Eschwege,44.0,,,6,Hessen
+4481,40,20241031,07111,,"Koblenz, kreisfreie Stadt",Koblenz,41.0,,,7,Rheinland-Pfalz
+4484,40,20241031,07131,,Ahrweiler,Bad Neuenahr-Ahrweiler,44.0,,,7,Rheinland-Pfalz
+4567,40,20241031,07132,,Altenkirchen (Westerwald),Altenkirchen (Ww),44.0,,,7,Rheinland-Pfalz
+4692,40,20241031,07133,,Bad Kreuznach,Bad Kreuznach,44.0,,,7,Rheinland-Pfalz
+4817,40,20241031,07134,,Birkenfeld,Birkenfeld,44.0,,,7,Rheinland-Pfalz
+4918,40,20241031,07135,,Cochem-Zell,Cochem,44.0,,,7,Rheinland-Pfalz
+5012,40,20241031,07137,,Mayen-Koblenz,Koblenz,44.0,,,7,Rheinland-Pfalz
+5110,40,20241031,07138,,Neuwied,Neuwied,44.0,,,7,Rheinland-Pfalz
+5181,40,20241031,07140,,Rhein-Hunsrück-Kreis,Simmern/Hunsrück,44.0,,,7,Rheinland-Pfalz
+5324,40,20241031,07141,,Rhein-Lahn-Kreis,Bad Ems,44.0,,,7,Rheinland-Pfalz
+5468,40,20241031,07143,,Westerwaldkreis,Montabaur,44.0,,,7,Rheinland-Pfalz
+5672,40,20241031,07211,,"Trier, kreisfreie Stadt",Trier,41.0,,,7,Rheinland-Pfalz
+5675,40,20241031,07231,,Bernkastel-Wittlich,Wittlich,44.0,,,7,Rheinland-Pfalz
+5789,40,20241031,07232,,Eifelkreis Bitburg-Prüm,Bitburg,44.0,,,7,Rheinland-Pfalz
+6030,40,20241031,07233,,Vulkaneifel,Daun,44.0,,,7,Rheinland-Pfalz
+6143,40,20241031,07235,,Trier-Saarburg,Trier,44.0,,,7,Rheinland-Pfalz
+6255,40,20241031,07311,,"Frankenthal (Pfalz), kreisfreie Stadt",Frankenthal (Pfalz),41.0,,,7,Rheinland-Pfalz
+6258,40,20241031,07312,,"Kaiserslautern, kreisfreie Stadt",Kaiserslautern,41.0,,,7,Rheinland-Pfalz
+6261,40,20241031,07313,,"Landau in der Pfalz, kreisfreie Stadt",Landau in der Pfalz,41.0,,,7,Rheinland-Pfalz
+6264,40,20241031,07314,,"Ludwigshafen am Rhein, kreisfreie Stadt",Ludwigshafen am Rhein,41.0,,,7,Rheinland-Pfalz
+6267,40,20241031,07315,,"Mainz, kreisfreie Stadt",Mainz,41.0,,,7,Rheinland-Pfalz
+6270,40,20241031,07316,,"Neustadt an der Weinstraße, kreisfreie Stadt",Neustadt an der Weinstraße,41.0,,,7,Rheinland-Pfalz
+6273,40,20241031,07317,,"Pirmasens, kreisfreie Stadt",Pirmasens,41.0,,,7,Rheinland-Pfalz
+6276,40,20241031,07318,,"Speyer, kreisfreie Stadt",Speyer,41.0,,,7,Rheinland-Pfalz
+6279,40,20241031,07319,,"Worms, kreisfreie Stadt",Worms,41.0,,,7,Rheinland-Pfalz
+6282,40,20241031,07320,,"Zweibrücken, kreisfreie Stadt",Zweibrücken,41.0,,,7,Rheinland-Pfalz
+6285,40,20241031,07331,,Alzey-Worms,Alzey,44.0,,,7,Rheinland-Pfalz
+6362,40,20241031,07332,,Bad Dürkheim,Bad Dürkheim,44.0,,,7,Rheinland-Pfalz
+6419,40,20241031,07333,,Donnersbergkreis,Kirchheimbolanden,44.0,,,7,Rheinland-Pfalz
+6506,40,20241031,07334,,Germersheim,Germersheim,44.0,,,7,Rheinland-Pfalz
+6546,40,20241031,07335,,Kaiserslautern,Kaiserslautern,44.0,,,7,Rheinland-Pfalz
+6603,40,20241031,07336,,Kusel,Kusel,44.0,,,7,Rheinland-Pfalz
+6705,40,20241031,07337,,Südliche Weinstraße,Landau in der Pfalz,44.0,,,7,Rheinland-Pfalz
+6788,40,20241031,07338,,Rhein-Pfalz-Kreis,Ludwigshafen am Rhein,44.0,,,7,Rheinland-Pfalz
+6824,40,20241031,07339,,Mainz-Bingen,Ingelheim am Rhein,44.0,,,7,Rheinland-Pfalz
+6898,40,20241031,07340,,Südwestpfalz,Pirmasens,44.0,,,7,Rheinland-Pfalz
+6993,40,20241031,08111,,"Stuttgart, Stadtkreis",Stuttgart,42.0,,,8,Baden-Württemberg
+6996,40,20241031,08115,,Böblingen,Böblingen,44.0,,,8,Baden-Württemberg
+7039,40,20241031,08116,,Esslingen,Esslingen am Neckar,44.0,,,8,Baden-Württemberg
+7102,40,20241031,08117,,Göppingen,Göppingen,44.0,,,8,Baden-Württemberg
+7153,40,20241031,08118,,Ludwigsburg,Ludwigsburg,44.0,,,8,Baden-Württemberg
+7213,40,20241031,08119,,Rems-Murr-Kreis,Waiblingen,44.0,,,8,Baden-Württemberg
+7262,40,20241031,08121,,"Heilbronn, Stadtkreis",Heilbronn,42.0,,,8,Baden-Württemberg
+7265,40,20241031,08125,,Heilbronn,Heilbronn,44.0,,,8,Baden-Württemberg
+7331,40,20241031,08126,,Hohenlohekreis,Künzelsau,44.0,,,8,Baden-Württemberg
+7355,40,20241031,08127,,Schwäbisch Hall,Schwäbisch Hall,44.0,,,8,Baden-Württemberg
+7398,40,20241031,08128,,Main-Tauber-Kreis,Tauberbischofsheim,44.0,,,8,Baden-Württemberg
+7429,40,20241031,08135,,Heidenheim,Heidenheim an der Brenz,44.0,,,8,Baden-Württemberg
+7449,40,20241031,08136,,Ostalbkreis,Aalen,44.0,,,8,Baden-Württemberg
+7508,40,20241031,08211,,"Baden-Baden, Stadtkreis",Baden-Baden,42.0,,,8,Baden-Württemberg
+7511,40,20241031,08212,,"Karlsruhe, Stadtkreis",Karlsruhe,42.0,,,8,Baden-Württemberg
+7514,40,20241031,08215,,Karlsruhe,Karlsruhe,44.0,,,8,Baden-Württemberg
+7570,40,20241031,08216,,Rastatt,Rastatt,44.0,,,8,Baden-Württemberg
+7605,40,20241031,08221,,"Heidelberg, Stadtkreis",Heidelberg,42.0,,,8,Baden-Württemberg
+7608,40,20241031,08222,,"Mannheim, Stadtkreis",Mannheim,42.0,,,8,Baden-Württemberg
+7611,40,20241031,08225,,Neckar-Odenwald-Kreis,Mosbach,44.0,,,8,Baden-Württemberg
+7650,40,20241031,08226,,Rhein-Neckar-Kreis,Heidelberg,44.0,,,8,Baden-Württemberg
+7735,40,20241031,08231,,"Pforzheim, Stadtkreis",Pforzheim,42.0,,,8,Baden-Württemberg
+7738,40,20241031,08235,,Calw,Calw,44.0,,,8,Baden-Württemberg
+7774,40,20241031,08236,,Enzkreis,Pforzheim,44.0,,,8,Baden-Württemberg
+7818,40,20241031,08237,,Freudenstadt,Freudenstadt,44.0,,,8,Baden-Württemberg
+7844,40,20241031,08311,,"Freiburg im Breisgau, Stadtkreis",Freiburg im Breisgau,42.0,,,8,Baden-Württemberg
+7847,40,20241031,08315,,Breisgau-Hochschwarzwald,Freiburg im Breisgau,44.0,,,8,Baden-Württemberg
+7918,40,20241031,08316,,Emmendingen,Emmendingen,44.0,,,8,Baden-Württemberg
+7949,40,20241031,08317,,Ortenaukreis,Offenburg,44.0,,,8,Baden-Württemberg
+8025,40,20241031,08325,,Rottweil,Rottweil,44.0,,,8,Baden-Württemberg
+8055,40,20241031,08326,,Schwarzwald-Baar-Kreis,Villingen-Schwenningen,44.0,,,8,Baden-Württemberg
+8085,40,20241031,08327,,Tuttlingen,Tuttlingen,44.0,,,8,Baden-Württemberg
+8128,40,20241031,08335,,Konstanz,Konstanz,44.0,,,8,Baden-Württemberg
+8163,40,20241031,08336,,Lörrach,Lörrach,44.0,,,8,Baden-Württemberg
+8213,40,20241031,08337,,Waldshut,Waldshut-Tiengen,44.0,,,8,Baden-Württemberg
+8262,40,20241031,08415,,Reutlingen,Reutlingen,44.0,,,8,Baden-Württemberg
+8306,40,20241031,08416,,Tübingen,Tübingen,44.0,,,8,Baden-Württemberg
+8330,40,20241031,08417,,Zollernalbkreis,Balingen,44.0,,,8,Baden-Württemberg
+8367,40,20241031,08421,,"Ulm, Stadtkreis",Ulm,42.0,,,8,Baden-Württemberg
+8370,40,20241031,08425,,Alb-Donau-Kreis,Ulm,44.0,,,8,Baden-Württemberg
+8439,40,20241031,08426,,Biberach,Biberach an der Riß,44.0,,,8,Baden-Württemberg
+8496,40,20241031,08435,,Bodenseekreis,Friedrichshafen,44.0,,,8,Baden-Württemberg
+8528,40,20241031,08436,,Ravensburg,Ravensburg,44.0,,,8,Baden-Württemberg
+8582,40,20241031,08437,,Sigmaringen,Sigmaringen,44.0,,,8,Baden-Württemberg
+8618,40,20241031,09161,,Ingolstadt,Ingolstadt,41.0,,,9,Bayern
+8621,40,20241031,09162,,"München, Landeshauptstadt",München,41.0,,,9,Bayern
+8624,40,20241031,09163,,Rosenheim,Rosenheim,41.0,,,9,Bayern
+8627,40,20241031,09171,,Altötting,Altötting,44.0,,,9,Bayern
+8668,40,20241031,09172,,Berchtesgadener Land,Bad Reichenhall,44.0,,,9,Bayern
+8703,40,20241031,09173,,Bad Tölz-Wolfratshausen,Bad Tölz,44.0,,,9,Bayern
+8746,40,20241031,09174,,Dachau,Dachau,44.0,,,9,Bayern
+8781,40,20241031,09175,,Ebersberg,Ebersberg,44.0,,,9,Bayern
+8823,40,20241031,09176,,Eichstätt,Eichstätt,44.0,,,9,Bayern
+8879,40,20241031,09177,,Erding,Erding,44.0,,,9,Bayern
+8923,40,20241031,09178,,Freising,Freising,44.0,,,9,Bayern
+8965,40,20241031,09179,,Fürstenfeldbruck,Fürstenfeldbruck,44.0,,,9,Bayern
+9003,40,20241031,09180,,Garmisch-Partenkirchen,Garmisch-Partenkirchen,44.0,,,9,Bayern
+9043,40,20241031,09181,,Landsberg am Lech,Landsberg am Lech,44.0,,,9,Bayern
+9093,40,20241031,09182,,Miesbach,Miesbach,44.0,,,9,Bayern
+9128,40,20241031,09183,,Mühldorf a.Inn,Mühldorf a.Inn,44.0,,,9,Bayern
+9180,40,20241031,09184,,München,München,44.0,,,9,Bayern
+9245,40,20241031,09185,,Neuburg-Schrobenhausen,Neuburg a.d.Donau,44.0,,,9,Bayern
+9277,40,20241031,09186,,Pfaffenhofen a.d.Ilm,Pfaffenhofen a.d.Ilm,44.0,,,9,Bayern
+9313,40,20241031,09187,,Rosenheim,Rosenheim,44.0,,,9,Bayern
+9404,40,20241031,09188,,Starnberg,Starnberg,44.0,,,9,Bayern
+9435,40,20241031,09189,,Traunstein,Traunstein,44.0,,,9,Bayern
+9504,40,20241031,09190,,Weilheim-Schongau,Weilheim i.OB,44.0,,,9,Bayern
+9559,40,20241031,09261,,Landshut,Landshut,41.0,,,9,Bayern
+9562,40,20241031,09262,,Passau,Passau,41.0,,,9,Bayern
+9565,40,20241031,09263,,Straubing,Straubing,41.0,,,9,Bayern
+9568,40,20241031,09271,,Deggendorf,Deggendorf,44.0,,,9,Bayern
+9614,40,20241031,09272,,Freyung-Grafenau,Freyung,44.0,,,9,Bayern
+9681,40,20241031,09273,,Kelheim,Kelheim,44.0,,,9,Bayern
+9725,40,20241031,09274,,Landshut,Landshut,44.0,,,9,Bayern
+9785,40,20241031,09275,,Passau,Passau,44.0,,,9,Bayern
+9859,40,20241031,09276,,Regen,Regen,44.0,,,9,Bayern
+9905,40,20241031,09277,,Rottal-Inn,Pfarrkirchen,44.0,,,9,Bayern
+9962,40,20241031,09278,,Straubing-Bogen,Straubing,44.0,,,9,Bayern
+10022,40,20241031,09279,,Dingolfing-Landau,Dingolfing,44.0,,,9,Bayern
+10053,40,20241031,09361,,Amberg,Amberg,41.0,,,9,Bayern
+10056,40,20241031,09362,,Regensburg,Regensburg,41.0,,,9,Bayern
+10059,40,20241031,09363,,Weiden i.d.OPf.,Weiden i.d.OPf.,41.0,,,9,Bayern
+10062,40,20241031,09371,,Amberg-Sulzbach,Amberg,44.0,,,9,Bayern
+10114,40,20241031,09372,,Cham,Cham,44.0,,,9,Bayern
+10186,40,20241031,09373,,Neumarkt i.d.OPf.,Neumarkt i.d.OPf.,44.0,,,9,Bayern
+10223,40,20241031,09374,,Neustadt a.d.Waldnaab,Neustadt a.d.Waldnaab,44.0,,,9,Bayern
+10287,40,20241031,09375,,Regensburg,Regensburg,44.0,,,9,Bayern
+10362,40,20241031,09376,,Schwandorf,Schwandorf,44.0,,,9,Bayern
+10417,40,20241031,09377,,Tirschenreuth,Tirschenreuth,44.0,,,9,Bayern
+10463,40,20241031,09461,,Bamberg,Bamberg,41.0,,,9,Bayern
+10466,40,20241031,09462,,Bayreuth,Bayreuth,41.0,,,9,Bayern
+10469,40,20241031,09463,,Coburg,Coburg,41.0,,,9,Bayern
+10472,40,20241031,09464,,Hof,Hof,41.0,,,9,Bayern
+10475,40,20241031,09471,,Bamberg,Bamberg,44.0,,,9,Bayern
+10560,40,20241031,09472,,Bayreuth,Bayreuth,44.0,,,9,Bayern
+10635,40,20241031,09473,,Coburg,Coburg,44.0,,,9,Bayern
+10675,40,20241031,09474,,Forchheim,Forchheim,44.0,,,9,Bayern
+10724,40,20241031,09475,,Hof,Hof,44.0,,,9,Bayern
+10781,40,20241031,09476,,Kronach,Kronach,44.0,,,9,Bayern
+10819,40,20241031,09477,,Kulmbach,Kulmbach,44.0,,,9,Bayern
+10856,40,20241031,09478,,Lichtenfels,Lichtenfels,44.0,,,9,Bayern
+10881,40,20241031,09479,,Wunsiedel i.Fichtelgebirge,Wunsiedel,44.0,,,9,Bayern
+10930,40,20241031,09561,,Ansbach,Ansbach,41.0,,,9,Bayern
+10933,40,20241031,09562,,Erlangen,Erlangen,41.0,,,9,Bayern
+10936,40,20241031,09563,,Fürth,Fürth,41.0,,,9,Bayern
+10939,40,20241031,09564,,Nürnberg,Nürnberg,41.0,,,9,Bayern
+10942,40,20241031,09565,,Schwabach,Schwabach,41.0,,,9,Bayern
+10945,40,20241031,09571,,Ansbach,Ansbach,44.0,,,9,Bayern
+11040,40,20241031,09572,,Erlangen-Höchstadt,Erlangen,44.0,,,9,Bayern
+11103,40,20241031,09573,,Fürth,Zirndorf,44.0,,,9,Bayern
+11130,40,20241031,09574,,Nürnberger Land,Lauf a.d.Pegnitz,44.0,,,9,Bayern
+11208,40,20241031,09575,,Neustadt a.d.Aisch-Bad Windsheim,Neustadt a.d.Aisch,44.0,,,9,Bayern
+11264,40,20241031,09576,,Roth,Roth,44.0,,,9,Bayern
+11307,40,20241031,09577,,Weißenburg-Gunzenhausen,Weißenburg i.Bay.,44.0,,,9,Bayern
+11350,40,20241031,09661,,Aschaffenburg,Aschaffenburg,41.0,,,9,Bayern
+11353,40,20241031,09662,,Schweinfurt,Schweinfurt,41.0,,,9,Bayern
+11356,40,20241031,09663,,Würzburg,Würzburg,41.0,,,9,Bayern
+11359,40,20241031,09671,,Aschaffenburg,Aschaffenburg,44.0,,,9,Bayern
+11431,40,20241031,09672,,Bad Kissingen,Bad Kissingen,44.0,,,9,Bayern
+11499,40,20241031,09673,,Rhön-Grabfeld,Bad Neustadt a.d.Saale,44.0,,,9,Bayern
+11565,40,20241031,09674,,Haßberge,Haßfurt,44.0,,,9,Bayern
+11606,40,20241031,09675,,Kitzingen,Kitzingen,44.0,,,9,Bayern
+11650,40,20241031,09676,,Miltenberg,Miltenberg,44.0,,,9,Bayern
+11713,40,20241031,09677,,Main-Spessart,Karlstadt,44.0,,,9,Bayern
+11790,40,20241031,09678,,Schweinfurt,Schweinfurt,44.0,,,9,Bayern
+11855,40,20241031,09679,,Würzburg,Würzburg,44.0,,,9,Bayern
+11948,40,20241031,09761,,Augsburg,Augsburg,41.0,,,9,Bayern
+11951,40,20241031,09762,,Kaufbeuren,Kaufbeuren,41.0,,,9,Bayern
+11954,40,20241031,09763,,Kempten (Allgäu),Kempten (Allgäu),41.0,,,9,Bayern
+11957,40,20241031,09764,,Memmingen,Memmingen,41.0,,,9,Bayern
+11960,40,20241031,09771,,Aichach-Friedberg,Aichach,44.0,,,9,Bayern
+11999,40,20241031,09772,,Augsburg,Augsburg,44.0,,,9,Bayern
+12077,40,20241031,09773,,Dillingen a.d.Donau,Dillingen a.d.Donau,44.0,,,9,Bayern
+12115,40,20241031,09774,,Günzburg,Günzburg,44.0,,,9,Bayern
+12171,40,20241031,09775,,Neu-Ulm,Neu-Ulm,44.0,,,9,Bayern
+12209,40,20241031,09776,,Lindau (Bodensee),Lindau (Bodensee),44.0,,,9,Bayern
+12242,40,20241031,09777,,Ostallgäu,Marktoberdorf,44.0,,,9,Bayern
+12308,40,20241031,09778,,Unterallgäu,Mindelheim,44.0,,,9,Bayern
+12382,40,20241031,09779,,Donau-Ries,Donauwörth,44.0,,,9,Bayern
+12449,40,20241031,09780,,Oberallgäu,Sonthofen,44.0,,,9,Bayern
+12504,40,20241031,10041,,Regionalverband Saarbrücken,"Saarbrücken, Landeshauptstadt",45.0,,,10,Saarland
+12525,40,20241031,10042,,Merzig-Wadern,"Merzig, Kreisstadt",44.0,,,10,Saarland
+12542,40,20241031,10043,,Neunkirchen,Ottweiler,44.0,,,10,Saarland
+12557,40,20241031,10044,,Saarlouis,"Saarlouis, Kreisstadt",44.0,,,10,Saarland
+12584,40,20241031,10045,,Saarpfalz-Kreis,"Homburg, Kreisstadt",44.0,,,10,Saarland
+12599,40,20241031,10046,,St. Wendel,"St. Wendel, Kreisstadt",44.0,,,10,Saarland
+12617,40,20241031,11000,,"Berlin, Stadt",Berlin,41.0,,,11,Berlin
+12621,40,20241031,12051,,"Brandenburg an der Havel, Stadt",Brandenburg an der Havel,41.0,,,12,Brandenburg
+12624,40,20241031,12052,,"Cottbus, Stadt",Cottbus,41.0,,,12,Brandenburg
+12627,40,20241031,12053,,"Frankfurt (Oder), Stadt",Frankfurt (Oder),41.0,,,12,Brandenburg
+12630,40,20241031,12054,,"Potsdam, Stadt",Potsdam,41.0,,,12,Brandenburg
+12633,40,20241031,12060,,Barnim,Eberswalde,44.0,,,12,Brandenburg
+12669,40,20241031,12061,,Dahme-Spreewald,Lübben(Spreewald),44.0,,,12,Brandenburg
+12723,40,20241031,12062,,Elbe-Elster,Herzberg/Elster,44.0,,,12,Brandenburg
+12770,40,20241031,12063,,Havelland,Rathenow,44.0,,,12,Brandenburg
+12810,40,20241031,12064,,Märkisch-Oderland,Seelow,44.0,,,12,Brandenburg
+12874,40,20241031,12065,,Oberhavel,Oranienburg,44.0,,,12,Brandenburg
+12909,40,20241031,12066,,Oberspreewald-Lausitz,Senftenberg,44.0,,,12,Brandenburg
+12946,40,20241031,12067,,Oder-Spree,Beeskow,44.0,,,12,Brandenburg
+13001,40,20241031,12068,,Ostprignitz-Ruppin,Neuruppin,44.0,,,12,Brandenburg
+13035,40,20241031,12069,,Potsdam-Mittelmark,Bad Belzig,44.0,,,12,Brandenburg
+13093,40,20241031,12070,,Prignitz,Perleberg,44.0,,,12,Brandenburg
+13131,40,20241031,12071,,Spree-Neiße,Forst(Lausitz),44.0,,,12,Brandenburg
+13172,40,20241031,12072,,Teltow-Fläming,Luckenwalde,44.0,,,12,Brandenburg
+13202,40,20241031,12073,,Uckermark,Prenzlau,44.0,,,12,Brandenburg
+13248,40,20241031,13003,,Rostock,Rostock,41.0,,,13,Mecklenburg-Vorpommern
+13251,40,20241031,13004,,Schwerin,Schwerin,41.0,,,13,Mecklenburg-Vorpommern
+13254,40,20241031,13071,,Mecklenburgische Seenplatte,Neubrandenburg,44.0,,,13,Mecklenburg-Vorpommern
+13421,40,20241031,13072,,Landkreis Rostock,Güstrow,44.0,,,13,Mecklenburg-Vorpommern
+13557,40,20241031,13073,,Vorpommern-Rügen,Stralsund,44.0,,,13,Mecklenburg-Vorpommern
+13679,40,20241031,13074,,Nordwestmecklenburg,Wismar,44.0,,,13,Mecklenburg-Vorpommern
+13775,40,20241031,13075,,Vorpommern-Greifswald,Greifswald,44.0,,,13,Mecklenburg-Vorpommern
+13933,40,20241031,13076,,Ludwigslust-Parchim,Parchim,44.0,,,13,Mecklenburg-Vorpommern
+14098,40,20241031,14511,,"Chemnitz, Stadt",Chemnitz,41.0,,,14,Sachsen
+14101,40,20241031,14521,,Erzgebirgskreis,Annaberg-Buchholz,44.0,,,14,Sachsen
+14207,40,20241031,14522,,Mittelsachsen,Freiberg,44.0,,,14,Sachsen
+14304,40,20241031,14523,,Vogtlandkreis,Plauen,44.0,,,14,Sachsen
+14367,40,20241031,14524,,Zwickau,Zwickau,44.0,,,14,Sachsen
+14425,40,20241031,14612,,"Dresden, Stadt",Dresden,41.0,,,14,Sachsen
+14428,40,20241031,14625,,Bautzen,Bautzen,44.0,,,14,Sachsen
+14529,40,20241031,14626,,Görlitz,Görlitz,44.0,,,14,Sachsen
+14611,40,20241031,14627,,Meißen,Meißen,44.0,,,14,Sachsen
+14665,40,20241031,14628,,Sächsische Schweiz-Osterzgebirge,Pirna,44.0,,,14,Sachsen
+14725,40,20241031,14713,,"Leipzig, Stadt",Leipzig,41.0,,,14,Sachsen
+14728,40,20241031,14729,,Leipzig,Borna,44.0,,,14,Sachsen
+14785,40,20241031,14730,,Nordsachsen,Torgau,44.0,,,14,Sachsen
+14841,40,20241031,15001,,"Dessau-Roßlau, Stadt",Dessau-Roßlau,41.0,,,15,Sachsen-Anhalt
+14844,40,20241031,15002,,"Halle (Saale), Stadt",Halle (Saale),41.0,,,15,Sachsen-Anhalt
+14847,40,20241031,15003,,"Magdeburg, Landeshauptstadt",Magdeburg,41.0,,,15,Sachsen-Anhalt
+14850,40,20241031,15081,,Altmarkkreis Salzwedel,Salzwedel,44.0,,,15,Sachsen-Anhalt
+14870,40,20241031,15082,,Anhalt-Bitterfeld,Köthen (Anhalt),44.0,,,15,Sachsen-Anhalt
+14891,40,20241031,15083,,Börde,Haldensleben,44.0,,,15,Sachsen-Anhalt
+14939,40,20241031,15084,,Burgenlandkreis,Naumburg (Saale),44.0,,,15,Sachsen-Anhalt
+14984,40,20241031,15085,,Harz,Halberstadt,44.0,,,15,Sachsen-Anhalt
+15019,40,20241031,15086,,Jerichower Land,Burg,44.0,,,15,Sachsen-Anhalt
+15036,40,20241031,15087,,Mansfeld-Südharz,Sangerhausen,44.0,,,15,Sachsen-Anhalt
+15070,40,20241031,15088,,Saalekreis,Merseburg,44.0,,,15,Sachsen-Anhalt
+15106,40,20241031,15089,,Salzlandkreis,Bernburg (Saale),44.0,,,15,Sachsen-Anhalt
+15141,40,20241031,15090,,Stendal,Stendal,44.0,,,15,Sachsen-Anhalt
+15176,40,20241031,15091,,Wittenberg,Lutherstadt Wittenberg,44.0,,,15,Sachsen-Anhalt
+15196,40,20241031,16051,,"Erfurt, Stadt",Erfurt,41.0,,,16,Thüringen
+15199,40,20241031,16052,,"Gera, Stadt",Gera,41.0,,,16,Thüringen
+15202,40,20241031,16053,,"Jena, Stadt",Jena,41.0,,,16,Thüringen
+15205,40,20241031,16054,,"Suhl, Stadt",Suhl,41.0,,,16,Thüringen
+15208,40,20241031,16055,,"Weimar, Stadt",Weimar,41.0,,,16,Thüringen
+15211,40,20241031,16061,,Eichsfeld,Heilbad Heiligenstadt,44.0,,,16,Thüringen
+15281,40,20241031,16062,,Nordhausen,Nordhausen,44.0,,,16,Thüringen
+15305,40,20241031,16063,,Wartburgkreis,Bad Salzungen,44.0,,,16,Thüringen
+15352,40,20241031,16064,,Unstrut-Hainich-Kreis,Mühlhausen/Thüringen,44.0,,,16,Thüringen
+15387,40,20241031,16065,,Kyffhäuserkreis,Sondershausen,44.0,,,16,Thüringen
+15426,40,20241031,16066,,Schmalkalden-Meiningen,Meiningen,44.0,,,16,Thüringen
+15478,40,20241031,16067,,Gotha,Gotha/Thür.,44.0,,,16,Thüringen
+15521,40,20241031,16068,,Sömmerda,Sömmerda,44.0,,,16,Thüringen
+15569,40,20241031,16069,,Hildburghausen,Hildburghausen,44.0,,,16,Thüringen
+15612,40,20241031,16070,,Ilm-Kreis,Arnstadt,44.0,,,16,Thüringen
+15637,40,20241031,16071,,Weimarer Land,Apolda,44.0,,,16,Thüringen
+15685,40,20241031,16072,,Sonneberg,Sonneberg,44.0,,,16,Thüringen
+15701,40,20241031,16073,,Saalfeld-Rudolstadt,Saalfeld/Saale,44.0,,,16,Thüringen
+15738,40,20241031,16074,,Saale-Holzland-Kreis,Eisenberg,44.0,,,16,Thüringen
+15840,40,20241031,16075,,Saale-Orla-Kreis,Schleiz,44.0,,,16,Thüringen
+15915,40,20241031,16076,,Greiz,Greiz,44.0,,,16,Thüringen
+15972,40,20241031,16077,,Altenburger Land,Altenburg,44.0,,,16,Thüringen
