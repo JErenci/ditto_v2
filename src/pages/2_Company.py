@@ -7,7 +7,8 @@ from geopy.geocoders import Nominatim
 
 # from functionality_maps import Maps
 import sys
-sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
+# sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
+# if __name__ == '__main__':
 from functionality_maps import Maps
 from functionality_maps import paths
 
@@ -17,8 +18,8 @@ file_used = run_relevant_variables.file_used
 
 dash.register_page(__name__)
 
-path_map_empty = 'assets/Geo/Map_empty.html'
-path_wca = 'assets/Geo/world_country_area.csv'
+path_map_empty = '/assets/Geo/Map_empty.html'
+path_wca = '/assets/Geo/world_country_area.csv'
 fields_wca = ['ADMIN', 'ISO_A3', 'Area_total_km2']
 aliases_wca = ['Code', 'Country', 'Area [km\u00b2]']
 
@@ -32,95 +33,95 @@ pdf_zips = pdf_d4['postcode']  # For indexing
 company_name = 'D1tt0'
 
 comp_dropCountry = dcc.Dropdown(
-                    id='dropdown_country_filter0',
-                    options=gdf_world.ADMIN.unique(),
-                    value=[],
-                    multi=True,
-                    searchable=True,
-                    persistence=False,
-                    persistence_type='memory',  # session
-                    placeholder=f"Select {paths.l_d_dropdown_map[0]}",
-                )
+                id='dropdown_country_filter0',
+                options=gdf_world.ADMIN.unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[0]}",
+            )
 comp_dropState = dcc.Dropdown(
-                    id='dropdown_country_filter1',
-                    options=pdf_d1['name'].unique(),
-                    value=[],
-                    multi=True,
-                    searchable=True,
-                    persistence=False,
-                    persistence_type='memory',  # session
-                    placeholder=f"Select {paths.l_d_dropdown_map[1]}(s)",
-                )
+                id='dropdown_country_filter1',
+                options=pdf_d1['name'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[1]}(s)",
+            )
 comp_dropRegion = dcc.Dropdown(
-                    id='dropdown_country_filter2',
-                    options=pdf_d2['NAME_2'].unique(),
-                    value=[],
-                    multi=True,
-                    searchable=True,
-                    persistence=False,
-                    persistence_type='memory',  # session
-                    placeholder=f"Select {paths.l_d_dropdown_map[2]}(s)",
-                )
+                id='dropdown_country_filter2',
+                options=pdf_d2['NAME_2'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[2]}(s)",
+            )
 comp_dropDistrict = dcc.Dropdown(
-                    id='dropdown_country_filter3',
-                    options=pdf_d3['NAME_3'].unique(),
-                    value=[],
-                    multi=True,
-                    searchable=True,
-                    persistence=False,
-                    persistence_type='memory',  # session
-                    placeholder=f"Select {paths.l_d_dropdown_map[3]}(s)",
-                )
+                id='dropdown_country_filter3',
+                options=pdf_d3['NAME_3'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[3]}(s)",
+            )
 comp_dropZIP = dcc.Dropdown(
-                    id='dropdown_country_filter4',
-                    options=pdf_d4['postcode'].unique(),
-                    value=[],
-                    multi=True,
-                    searchable=True,
-                    persistence=False,
-                    persistence_type='memory',  # session
-                    placeholder=f"Select {paths.l_d_dropdown_map[4]}(s)",
-                )
+                id='dropdown_country_filter4',
+                options=pdf_d4['postcode'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[4]}(s)",
+            )
 comp_pdf_found = html.Div(id='pdf_world_found')
 comp_map = html.Div(id='map_figure_right')
 
 # layout = dbc.Container(
 layout = dbc.Container(
-    [
-        # dcc.Markdown('# This will be the content of Page Company'),
-        html.Div(id='image_customer', children=''),
-        dbc.Row(
-            dbc.Col(html.H1("World Dashboard",
-                            className='text-center text-primary',),
-                    width=12)
-        ),
+[
+    # dcc.Markdown('# This will be the content of Page Company'),
+    html.Div(id='image_customer', children=''),
+    dbc.Row(
+        dbc.Col(html.H1("World Dashboard",
+                        className='text-center text-primary',),
+                width=12)
+    ),
 
-        dbc.Row([
-            dbc.Col([
-                comp_dropCountry,   # COUNTRY
-                comp_dropState,     # STATE
-                comp_dropRegion,    # REGION
-                comp_dropDistrict,  # DISTRICT
-                comp_dropZIP,       # ZIP
-            ], width={'size': 5}),
-            dbc.Col([
-                comp_pdf_found,     # MAP
-                comp_map            # MAP
-            ], width={'size': 7}),
-        ], justify='start'),  # Horizontal:start,center,end,between,around
-    ],
-    fluid=True,     # Stretch to use all screen
+    dbc.Row([
+        dbc.Col([
+            comp_dropCountry,   # COUNTRY
+            comp_dropState,     # STATE
+            comp_dropRegion,    # REGION
+            comp_dropDistrict,  # DISTRICT
+            comp_dropZIP,       # ZIP
+        ], width={'size': 5}),
+        dbc.Col([
+            comp_pdf_found,     # MAP
+            comp_map            # MAP
+        ], width={'size': 7}),
+    ], justify='start'),  # Horizontal:start,center,end,between,around
+],
+fluid=True,     # Stretch to use all screen
 )
 
 @callback(
-    # Output(component_id='pdf_world_found', component_property='children'),
-    Output(component_id='map_figure_right', component_property='children'),
-    Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
-    Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
-    Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
-    Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
-    Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
-    prevent_initial_call=True
+# Output(component_id='pdf_world_found', component_property='children'),
+Output(component_id='map_figure_right', component_property='children'),
+Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
+Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
+Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
+Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
+Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
+prevent_initial_call=True
 )
 def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
     dropdown_value = paths.l_d_dropdown_map

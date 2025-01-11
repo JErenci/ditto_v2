@@ -86,6 +86,10 @@ dict_shortBL_id = {
     'DE-TH': 16
 }
 
+########################
+### HELPER FUNCTIONS ###
+########################
+
 def map_BL(pdf:pd.DataFrame, col_BL='ARS_BL') -> pd.DataFrame:
     """
     maps the Bundesland in the column 'col_BL' of 'pdf'
@@ -119,29 +123,9 @@ def add_ARS_info(
     del pdf['ARS_str']
     return pdf
 
-def parse_geometry(
-    filename:str, 
-    map_col:str='id',
-    index_col:list=[0],
-    crs:str = None
-)-> gpd.GeoDataFrame:
-    if crs == None:
-        crs = "EPSG:4326"
-    
-    pdf = pd.read_csv(filename, index_col=index_col)
-
-    # Remove null rows
-    pdf = pdf[pdf['geometry'].notnull()]
-    gs = gpd.GeoSeries.from_wkt(pdf['geometry'])
-    
-    gdf = gpd.GeoDataFrame(pdf, geometry=gs, crs=crs)
-
-    for colname, coltype in gpd.io.file.infer_schema(gdf).items():
-        if coltype == 'bool':
-            gdf[colname] = gdf[colname].fillna(0).astype(int)
-
-    return pdf
-    
+#######################
+### MAIN  FUNCTIONS ###
+#######################
 
 def parse_census(
     table_code:str,
@@ -202,8 +186,6 @@ def parse_census(
         pdf.drop(index=[0], inplace=True)
     
     
-    
-    
     else:
         print(f'Invalid code [{table_code}]')
         return None
@@ -227,73 +209,8 @@ def parse_census(
     # pdf.to_json(filename_saved, orient='records')
 
     return pdf
-    
-#     if filename == None:
-#         filename=f'{table_code}.csv'
 
-#     pdf = pd.read_csv(
-#         filepath_or_buffer = filename, 
-#         skiprows=4,
-#         header=0, 
-#         sep=';',
-#         dtype={'Unnamed: 1': str}
-#     )[:-4]
-
-#     if table_code == '1000A-0001_de':
-# # https://ergebnisse.zensus2022.de/datenbank/online/statistic/1000A/table/1000A-0001'
-# # Personen: Bevölkerungszahl und Fläche (Gemeinden)
-# ## Bevölkerungszahl: Personen, die in einem bestimmten Gebiet (z.B. Land, Region, Stadt) leben, unabhängig davon, ob sie dort arbeiten, wohnen oder sich aufhalten. Sie berücksichtigt auch Ausländer, die in Deutschland leben, sowie Personen, die mehrere Wohnsitze haben.
-
-#         l_col_drop = ['Unnamed: 0', 'Anzahl.1', 'qkm.1', 'Ew/qkm.1']
-#         pdf = pdf.drop(l_col_drop, axis=1)
-#         pdf = pdf.rename(columns={'Unnamed: 1' : 'ARS', 'Unnamed: 2' : 'BEZ'})
-
-#         col_flaeche = 'qkm'
-    
-#     elif table_code == '1000X-0001_de':
-#         # https://ergebnisse.zensus2022.de/datenbank/online/statistic/1000A/table/1000X-0001
-#         # Personen: Amtliche Einwohnerzahl und Fläche (Gemeinden)
-#         ## Einwohnerzahl: Anzahl von Personen, die in einem bestimmten Gebiet (z.B. Gemeinde, Stadt, Landkreis) ihren Hauptwohnsitz haben. Sie berücksichtigt nur diejenigen Personen, die in diesem Gebiet ihre alleinige oder Hauptwohnung haben.
-
-#         l_col_drop = ['Unnamed: 3', 'Unnamed: 5', 'Unnamed: 7']
-#         pdf = pdf.drop(l_col_drop, axis=1)
-#         pdf = pdf.rename(columns={'Unnamed: 0' : 'ARS', 'Unnamed: 1' : 'BEZ'})
-        
-#         l_col_name_new = []
-#         l_col_name_old = ['Personen', 'Fläche', 'Bevölkerungsdichte']
-#         for name_old in l_col_name_old:
-#             name_new = pdf.loc[0,name_old]
-#             name_new = f'{name_old} [{name_new}]'
-#             l_col_name_new.append(name_new)
-        
-#         dict_col_rename = dict(zip(l_col_name_old, l_col_name_new))
-#         pdf = pdf.rename(columns=dict_col_rename)
-#         pdf.drop(index=[0], inplace=True)
-        
-#         col_flaeche =  'Fläche [qkm]'
-
-#     else:
-#         print(f'Invalid code [{table_code}]')
-#         return null
-    
-#     pdf[col_flaeche] = pdf[col_flaeche].str.replace(',','.')
-#     pdf[col_flaeche] = pd.to_numeric(pdf[col_flaeche], errors='coerce')
-
-#     pdf = add_ARS_info(pdf)
-#     pdf = map_BL(pdf)
-#     pdf = pdf.drop_duplicates()
-
-#     # Save pd df
-#     if logging:
-#         print(f'Saving file {file}')
-    
-#     # filename_saved=f'DE_2022_{table_code}.json',
-#     # pdf.to_json(filename_saved, orient='records')
-
-#     return pdf
-
-
-def load_zensus(
+def load_census(
     table_code:str,
 ) -> pd.DataFrame:
     """" Loads data from Zensus for a given year
@@ -312,14 +229,44 @@ def load_zensus(
     # pdf = pdf.astype({col: 'int32' for col in pdf.select_dtypes('int64').columns})
     return pdf
 
+
+
+
+def parse_geometry(
+    filename:str, 
+    map_col:str='id',
+    index_col:list=[0],
+    crs:str = None
+)-> gpd.GeoDataFrame:
+    if crs == None:
+        crs = "EPSG:4326"
+    
+    pdf = pd.read_csv(filename, index_col=index_col)
+
+    # Remove null rows
+    pdf = pdf[pdf['geometry'].notnull()]
+    gs = gpd.GeoSeries.from_wkt(pdf['geometry'])
+    
+    gdf = gpd.GeoDataFrame(pdf, geometry=gs, crs=crs)
+
+    for colname, coltype in gpd.io.file.infer_schema(gdf).items():
+        if coltype == 'bool':
+            gdf[colname] = gdf[colname].fillna(0).astype(int)
+
+    return pdf
+    
+
+
 def load_geometry(
-    country:str='DE',
+    filename:str=None,
     geom_level:str='D1',
     index_col:list=[0],
     logging:bool=False
 ) -> pd.DataFrame:
+
+    if filename == None:
+        filename = f'DE_{geom_level}_clean.csv'
     
-    filename = f'{country}_{geom_level}_clean.csv'
     if logging:
         print(f'Reading {filename}...')
     return pd.read_csv(filename, index_col=index_col)
@@ -332,16 +279,43 @@ def load_zensus_with_geom(
 
 def gen_bund_summary(
     pdf:pd.DataFrame,
-    l_groupby:list = ['ARS_BL','BL_name'],
-    col_population='Personen [Anzahl]',
+    geom_level:int,
+    l_groupby:list = None,
+    col_population:str='Personen [Anzahl]',
     col_surface:str='Fläche [qkm]',
     col_density:str = 'Bevölkerungsdichte [Ew/qkm]',
     # col_sort:str = 'ARS_BL',
     logging:bool=False
 ) -> pd.DataFrame:
 
-    l_sum=[col_population,col_surface]
-    pdf_sum = pdf.groupby(l_groupby)[l_sum].sum()
+    
+    if l_groupby == None:
+        l_sum=[col_population,col_surface]
+        if geom_level == 0:
+            col_country = 'NAME_LOCAL'
+            pdf_series = pdf.agg({col_population: 'sum', col_surface:'sum'})
+            pdf_sum = pdf_series.to_frame(name='summary').T#, count_surface: 'sum'}).T
+            pdf_sum[col_country] = 'Deutschland'
+            pdf_sum[col_density] = pdf_sum[col_population]/pdf_sum[col_surface]
+            pdf_sum[col_density] = pdf_sum[col_density].round(2)
+
+            return pdf_sum
+        else:
+            if geom_level == 1:
+                l_groupby = ['ARS_BL','BL_name'] # DE_D1
+            elif geom_level == 2:
+                l_groupby = ['ARS_BL','BL_name','ARS_REG_BEZ'] # DE_D2
+            elif geom_level == 3:
+                l_groupby = ['ARS_BL','BL_name','ARS_REG_BEZ','ARS_KREIS'] # DE_D3
+            elif geom_level == 4:
+                l_groupby = ['ARS_BL','BL_name','ARS_KREIS','ARS_GEM_VERBAND','BEZ'] # DE_D4
+            # elif geom_level == 5:
+            #     l_groupby = ['ARS_BL','BL_name','ARS_KREIS','ARS_GEM_VERBAND','BEZ', 'ARS_GEM'] # DE_D5
+            else:
+                print('Error!!! \n  geom level [{geom_level}] not processed')
+                return None
+                
+            pdf_sum = pdf.groupby(l_groupby)[l_sum].sum()
     pdf_sum[col_density] = pdf_sum[col_population]/pdf_sum[col_surface]
     pdf_sum[col_density] = pdf_sum[col_density].round(2)
     
