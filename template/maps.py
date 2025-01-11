@@ -1,8 +1,16 @@
 import pandas as pd
-
+import numpy as np
 import geopandas as gpd
 import folium
 import folium.plugins
+
+highlight_function = lambda x: {
+    'fillColor': 'red',
+    # 'color': 'black',
+    # 'lineColor': 'red',
+    'fillOpacity': 0.40,
+    # 'weight': 0.1
+}
 
 def gen_map(
     pdf:pd.DataFrame, 
@@ -11,7 +19,7 @@ def gen_map(
     col_pdf_breakdown:str=None,
     dict_zones:dict=None,
     sel_col:str=None,
-    highlight_function=None, 
+    highlight_function=highlight_function, 
     dict_tooltip:dict=None,
     logging:bool=False
 ) -> folium.Map:
@@ -23,11 +31,14 @@ def gen_map(
         return {'fillColor': value, 'fillOpacity': 0.2}
     
     # Create Folium map
-    m = folium.Map(tiles='cartodbpositron')
+    fm = folium.Map(tiles='cartodbpositron')
 
     if dict_tooltip == None:
         tooltip = None
     else:
+        if logging:
+            print(f'keys={list(dict_tooltip.keys())}')
+            print(f'aliases={list(dict_tooltip.values())}')
         tooltip = folium.GeoJsonTooltip(fields=list(dict_tooltip.keys()), 
                                 aliases=list(dict_tooltip.values()))
         
@@ -43,15 +54,19 @@ def gen_map(
             )
         
         fg.add_child(gj)
-        m.add_child(fg)
+        fm.add_child(fg)
 
     else:
         l_breakdown = list(pdf[col_pdf_breakdown].unique())
         l_featGroups = []
         for zone in l_breakdown:
+            if zone in list(dict_zones.keys()):
+                fg_name = f'{legend_str} [{zone}, {dict_zones[zone]}]'
+                fg_name_styled = f'<span style="color: {zone};">{fg_name}</span>'
+            else:
                 
-            fg_name = f'{legend_str} [{zone}, {dict_zones[zone]}]'
-            fg_name_styled = f'<span style="color: {zone};">{fg_name}</span>'
+                fg_name = f'{legend_str} [{zone}]'
+                fg_name_styled = f'<span style="color: black;">{fg_name}</span>'
             
             if logging:
                 print(f'fg_name={fg_name}')
@@ -70,13 +85,13 @@ def gen_map(
         
             fg.add_child(gj)
             l_featGroups.append(fg)
-            # m.add_child(fg)
+            # fm.add_child(fg)
 
         if logging:
             print(f'Adding Folium.FeatureGroups [{len(l_featGroups)}]')
         for fgr in l_featGroups:
-            fgr.add_to(m)
-            # m.add_child(fgr)
+            fgr.add_to(fm)
+            # fm.add_child(fgr)
 
     if logging:
         print('Adding fullscreen')
@@ -84,33 +99,27 @@ def gen_map(
                                            title='Expand me',
                                            title_cancel='Exit me',
                                            force_separate_button=True)
-    m.add_child(fullscreen)
+    fm.add_child(fullscreen)
     
-    
-    # Display the map
-    
+    # Add minimap
     if logging:
-        print('Adding minimap')
-    m.add_child(folium.plugins.MiniMap())
+        print(' Adding minimap')
+    fm.add_child(folium.plugins.MiniMap())
     
     # Add layer control to toggle feature groups
     if logging:
         print('Adding LayerControl')
     folium.LayerControl(position='topright',
-                        collapsed=False).add_to(m)
+                        collapsed=False).add_to(fm)
     
-    m.fit_bounds(m.get_bounds())
+    if logging:
+        print('Fitting Map')
+    fm.fit_bounds(fm.get_bounds())
     
-    return m
+    return fm
 
 
-highlight_function = lambda x: {
-    # 'fillColor': 'red',
-                                # 'color': 'black',
-                                # 'lineColor': 'red',
-                                'fillOpacity': 0.80,
-                                # 'weight': 0.1
-}
+
 
 
 def map_range(x,dict_color):
@@ -119,15 +128,16 @@ def map_range(x,dict_color):
             return value
     return np.nan  # or any default value you prefer
 
-def add_color_column_to_pdf_based_on_limits(pdf, col_ref:str, 
-                                            first_lim:float, second_lim:float,
-                                            first_color:str='green', second_color:str='yellow', third_color:str='red',
-                                            col_color:str='color',
+def add_color_column(pdf, col_ref:str, 
+                     lim1:float, lim2:float,
+                     col_pdf_breakdown: str = 'color',
+                     first_color:str='green', second_color:str='yellow',third_color:str='red',
+                     col_color:str='color',
 ):
     dict_color = {
-        (0, first_lim): first_color, 
-        (first_lim, second_lim): second_color, 
-        (second_lim, float('inf')): third_color
+        (0, lim1): first_color, 
+        (lim1, lim2): second_color, 
+        (lim2, float('inf')): third_color
     }
     dict_color_inv = {v: k for k, v in dict_color.items()}
     # dict_color_inv
@@ -139,7 +149,9 @@ def add_color_column_to_pdf_based_on_limits(pdf, col_ref:str,
         return np.nan  # or any default value you prefer
         
     pdf[col_color] = pdf[col_ref].apply(lambda x : map_range(x,dict_color))
-    return [pdf,dict_color,dict_color_inv]
+    # pdf[col_pdf_breakdown] = pdf[sel_column].apply(lambda x : maps.map_range(x,dict_color))
+
+    return [pdf,dict_color_inv]
     
 import json
 import base64
@@ -444,3 +456,123 @@ def get_feature_group_countries(gdf_world: gpd.geodataframe.GeoDataFrame,
                                            aliases=aliases,
                                            )
     return fg_countries
+
+def check_sanity_gdf_geometry(gdf):
+    size1 = gdf.geometry.isna().count()
+    size2 = gdf.shape[0]
+
+    if (size1==size2):
+        print(f'  PASS --> Sanity check1 , size1={size1}, size2={size2}, [NaNs] --> [0]')
+    else:
+        print(f'  FAIL --> Sanity check1 , size1={size1}, size2={size2}, [NaNs] --> [0]')
+        raise Exception('NaNs in gdf')
+
+    try:
+        gj = folium.GeoJson(gdf)
+        print(f'  PASS --> Sanity check2 --> [GeoJson could be generated!]')
+    except:
+        
+        print(f'  FAIL --> Sanity check2 --> [GeoJson could be generated!]')
+        raise Exception('Sanity check2 --> GeoJson can NOT be generated!')
+        
+
+def extract_gdf(path:str = 'GADM/gadm41_', country_3:str = 'AUT', l_levels:list = [1,2,3,4], is_logging:bool=False) :
+    l_gdf = []
+    l_name_adm = []
+    l_tooltip = []
+    
+    l_field = []
+    l_alias = []
+    
+    l_field_ini = []
+    l_alias_ini = []
+    
+    for level in l_levels:
+        if is_logging:
+            print(f' level={level}')
+        path_adm = f'{path}{country_3}_{level}.json'
+        gdf_adm = gpd.read_file(path_adm)
+        if is_logging:
+            print(f'  Adding level={level} [{gdf_adm.shape[0]}]')
+        l_gdf.append(gdf_adm)
+
+        col_name = f'TYPE_{level}'
+        if is_logging:
+            print(f'col_name={col_name}')
+        name_adm = extract_values(gdf_adm[col_name].drop_duplicates().values)
+        if is_logging:
+            print(f'  Extracting name for ADM={level} [{name_adm}]')
+        l_name_adm.append(name_adm)
+
+        if not l_field_ini:
+            l_field_ini = [f'NAME_{level}']
+        else:
+            l_field_ini.append(f'NAME_{level}')
+        l_field.append(l_field_ini)
+        if is_logging:
+            print(f'l_field_ini = {l_field_ini} in tooltip{level}')
+            
+        if not l_alias_ini:
+            l_alias_ini = [name_adm]
+        else:
+            l_alias_ini.append(name_adm)
+        l_alias.append(l_alias_ini)
+        if is_logging:
+            print(f'l_alias_ini= {l_alias_ini} to tooltip{level}')
+            
+        tooltip = folium.GeoJsonTooltip(
+            fields=l_field_ini.copy(),
+            aliases=l_alias_ini.copy(),
+        )
+        l_tooltip.append(tooltip)
+
+
+    return [l_gdf, l_name_adm, 
+            l_tooltip,
+            l_field, l_alias
+           ]
+
+
+
+def extract_values(col_values):
+    name_adm = list(col_values)
+    name_adm = [x for x in name_adm if x != 'NA']
+    return name_adm
+
+def gen_maps(
+    l_adm, 
+    l_gdf, 
+    name_adm,
+    l_tooltip, 
+    is_logging:bool=False
+) -> folium.Map():
+    
+    fm = folium.Map()
+    
+    for adm,gdf_adm,name_adm, tooltip_adm, field_adm, alias_adm in zip(l_adm,l_gdf,l_name_adm, l_tooltip, l_field_adm, l_alias_adm):
+        gj = folium.GeoJson(
+            gdf_adm,
+            highlight_function=highlight_function,
+            tooltip=tooltip_adm
+        )            
+        fg = folium.FeatureGroup(name=f'ADM={adm} [{gdf_adm.shape[0]} {name_adm}]')
+        fg.add_child(gj)
+        fg.add_to(fm)
+        if is_logging:
+            print(f'Adding ADM={adm} [{gdf_adm.shape[0]}  {name_adm}]')
+        
+    folium.LayerControl(position='topright',
+                        collapsed=False).add_to(fm)
+    print('Adding layers')
+    fullscreen = folium.plugins.Fullscreen(position='topleft',
+                                           title='Expand me',
+                                           title_cancel='Exit me',
+                                           force_separate_button=True)
+    fm.add_child(fullscreen)
+    print('Full screen')
+    
+    fm.fit_bounds(fm.get_bounds())
+    print('Fitting')
+    
+    
+    return fm

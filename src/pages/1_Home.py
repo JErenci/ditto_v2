@@ -6,32 +6,49 @@ import base64
 
 import sys, os
 
-sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
+sys.path.append('/Users/gujua/PycharmProjects/ditto_v2/')
+## RELATIVE IMPORT
+sys.path.append(".")
+
+import sys
+sys.path.insert(0, '..')
+sys.path.insert(0, '../..')
+# from src.functionality import basic, Maps
+# from src import run_variables
+
 from functionality_maps import Maps
 from assets import run_relevant_variables
 company_name = run_relevant_variables.company_name
 file_used = run_relevant_variables.file_used
 logging_Home = run_relevant_variables.logging_Home
-
+base64_decoded_company_image = run_relevant_variables.img_logo
+base64_decoded_user_image = run_relevant_variables.img_user
 # from functionality_maps import paths
 
 dash.register_page(__name__, path='/')
 
-if logging_Home:
-    print(f'company={company_name}')
-    print(f'file_used={file_used}')
 
-companyLogo = 'logo.png'
-companyUser = 'user.jpg'
+img_log0 = run_relevant_variables.base64_decoded_company_image
+img_user = run_relevant_variables.base64_decoded_user_image
 
-filename_without_extension = os.path.basename(__file__).split('.')[0]
-
-path_to_default_companyLogo = f'assets/{company_name}/{filename_without_extension}/{companyLogo}'
-path_to_default_companyUser = f'assets/{company_name}/{filename_without_extension}/{companyUser}'
-
-base64_decoded_company_image = base64.b64encode(open(path_to_default_companyLogo, "rb").read()).decode()
-base64_decoded_user_image = base64.b64encode(open(path_to_default_companyUser, "rb").read()).decode()
-
+# if logging_Home:
+#     print(f'company={company_name}')
+#     print(f'file_used={file_used}')
+#
+# companyLogo = 'logo.jpg'
+# companyUser = 'user.jpg'
+#
+# filename_without_extension = os.path.basename(__file__).split('.')[0]
+# print(f'filename_without_extension={filename_without_extension}')
+#
+# path_to_default_companyLogo = f'../assets/{company_name}/{filename_without_extension}/{companyLogo}'
+# path_to_default_companyUser = f'../assets/{company_name}/{filename_without_extension}/{companyUser}'
+#
+# print(f'path_to_default_companyLogo={path_to_default_companyLogo}')
+# print(f'path_to_default_companyUser={path_to_default_companyUser}')
+# base64_decoded_company_image = base64.b64encode(open(path_to_default_companyLogo, "rb").read()).decode()
+# base64_decoded_user_image = base64.b64encode(open(path_to_default_companyUser, "rb").read()).decode()
+#
 
 ## 2.b. Components              [comp1 = dcc.Markdown("Hello World!"))]
 
