@@ -309,6 +309,63 @@ def get_feature_group_countries(gdf_world: gpd.geodataframe.GeoDataFrame,
     return fg_countries
 
 
+def extract_gdf(path:str = 'GADM/gadm41_', country_3:str = 'AUT', l_levels:list = [1,2,3,4], is_logging:bool=False) :
+    l_gdf = []
+    l_name_adm = []
+    l_tooltip = []
+    
+    l_field = []
+    l_alias = []
+    
+    l_field_ini = []
+    l_alias_ini = []
+    
+    for level in l_levels:
+        if is_logging:
+            print(f' level={level}')
+        path_adm = f'{path}{country_3}_{level}.json'
+        gdf_adm = gpd.read_file(path_adm)
+        if is_logging:
+            print(f'  Adding level={level} [{gdf_adm.shape[0]}]')
+        l_gdf.append(gdf_adm)
+
+        col_name = f'TYPE_{level}'
+        if is_logging:
+            print(f'col_name={col_name}')
+        name_adm = extract_values(gdf_adm[col_name].drop_duplicates().values)
+        if is_logging:
+            print(f'  Extracting name for ADM={level} [{name_adm}]')
+        l_name_adm.append(name_adm)
+
+        if not l_field_ini:
+            l_field_ini = [f'NAME_{level}']
+        else:
+            l_field_ini.append(f'NAME_{level}')
+        l_field.append(l_field_ini)
+        if is_logging:
+            print(f'l_field_ini = {l_field_ini} in tooltip{level}')
+            
+        if not l_alias_ini:
+            l_alias_ini = [name_adm]
+        else:
+            l_alias_ini.append(name_adm)
+        l_alias.append(l_alias_ini)
+        if is_logging:
+            print(f'l_alias_ini= {l_alias_ini} to tooltip{level}')
+            
+        tooltip = folium.GeoJsonTooltip(
+            fields=l_field_ini.copy(),
+            aliases=l_alias_ini.copy(),
+        )
+        l_tooltip.append(tooltip)
+
+
+    return [l_gdf, l_name_adm, 
+            l_tooltip,
+            l_field, l_alias
+           ]
+
+
 def extract_gdf_gpkg(path:str, l_levels:list = [1,2,3,4], is_logging:bool=False) :
     l_gdf = []
     l_name_adm = []
@@ -332,36 +389,6 @@ def extract_gdf_gpkg(path:str, l_levels:list = [1,2,3,4], is_logging:bool=False)
             print(f'  Adding level={level} [{gdf_adm.shape[0]}]')
         l_gdf.append(gdf_adm)
 
-        # col_name = f'TYPE_{level}'
-        # if is_logging:
-        #     print(f'col_name={col_name}')
-        # name_adm = extract_values(gdf_adm[col_name].drop_duplicates().values)
-        # if is_logging:
-        #     print(f'  Extracting name for ADM={level} [{name_adm}]')
-        # l_name_adm.append(name_adm)
-
-        # if not l_field_ini:
-        #     l_field_ini = [f'NAME_{level}']
-        # else:
-        #     l_field_ini.append(f'NAME_{level}')
-        # l_field.append(l_field_ini)
-        # if is_logging:
-        #     print(f'l_field_ini = {l_field_ini} in tooltip{level}')
-            
-        # if not l_alias_ini:
-        #     l_alias_ini = [name_adm]
-        # else:
-        #     l_alias_ini.append(name_adm)
-        # l_alias.append(l_alias_ini)
-        # if is_logging:
-        #     print(f'l_alias_ini= {l_alias_ini} to tooltip{level}')
-        
-        
-        # tooltip = folium.GeoJsonTooltip(
-        #     fields=l_field_ini.copy(),
-        #     # aliases=l_alias_ini.copy(),
-        # )
-        # l_tooltip.append(tooltip)
         print(f'ADM={current_adm}')
         if (current_adm == 0):
             tooltip=folium.features.GeoJsonTooltip(fields=[name_adm])
