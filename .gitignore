@@ -1,6 +1,7 @@
 map_right.txt
 *.gpkg
 *.pyc
+*map.html
 __pycache__/
 JupNB/.ipynb_checkpoints/fake_customers_gen-checkpoint.ipynb
 JupNB/.ipynb_checkpoints/fake_customers_gen-checkpoint.html
