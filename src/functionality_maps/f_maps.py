@@ -242,8 +242,7 @@ def write_map_temp(fm: folium.Map(), name_map: str):
     print("Map has been written!")
 
 
-def get_feature_group(pdf: pd.DataFrame,
-                      category: str) -> folium.FeatureGroup:
+def get_feature_group(pdf: pd.DataFrame, category: str) -> folium.FeatureGroup:
     if not pdf.empty:
         print(f'Count: [{pdf.shape[0]}]')
         print(f'pdf [{pdf.head(1)}]')
@@ -309,7 +308,7 @@ def get_feature_group_countries(gdf_world: gpd.geodataframe.GeoDataFrame,
     return fg_countries
 
 
-def extract_gdf(path:str = 'GADM/gadm41_', country_3:str = 'AUT', l_levels:list = [1,2,3,4], is_logging:bool=False) :
+def extract_gdf_json(path:str = 'GADM/gadm41_', country_3:str = 'AUT', l_levels:list = [1,2,3,4], is_logging:bool=False) :
     l_gdf = []
     l_name_adm = []
     l_tooltip = []
@@ -420,21 +419,16 @@ def extract_values(col_values):
     return name_adm
 
 
-def gen_maps(
-        
-    l_adm, 
-    l_gdf, 
-    l_name_adm,
-    l_tooltip, 
-    is_logging:bool=False
-) -> folium.Map():
+def gen_maps(l_adm:list, l_gdf:list, l_name_adm:list, l_tooltip:list, is_logging:bool=False) -> folium.Map():
     
     fm = folium.Map()
     
     for adm, gdf_adm, name_adm, tooltip_adm in zip(l_adm, l_gdf, l_name_adm, l_tooltip):
     # for adm, gdf_adm, tooltip_adm in zip(l_adm, l_gdf, l_tooltip):
-    
-        current_adm = int(adm[-1])
+        if(type(adm) == str):
+            current_adm = int(adm[-1])
+        else:
+            current_adm = adm
         if is_logging:
             print(f'Adding ADM={current_adm} [{gdf_adm.shape[0]}  {name_adm}]')
             # print(f'Adding ADM={adm} [{gdf_adm.shape[0]}]')
@@ -467,7 +461,7 @@ def gen_maps(
 
 import requests
 
-def download_gpkg_country(country_ISO_3):
+def download_gpkg_country(country_ISO_3:str):
     url=f'https://geodata.ucdavis.edu/gadm/gadm4.1/gpkg/gadm41_{country_ISO_3}.gpkg'
     local_filename = f'assets/Geo/GADM/gadm41_{country_ISO_3}.gpkg'
 
