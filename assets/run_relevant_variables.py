@@ -1,8 +1,8 @@
 import sys, os, base64
 
-# company_name = 'Vaude'
-company_name = 'D1tt0'
-# company_name = 'Baumgartner'
+company_name = 'Vaude'
+# company_name = 'D1tt0'
+company_name = 'Baumgartner'
 
 logging_Home = True
 logging_Company = False

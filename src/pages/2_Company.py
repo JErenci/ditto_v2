@@ -5,11 +5,11 @@ from dash import callback, html, dcc, Input, Output, dash_table, no_update
 import dash_bootstrap_components as dbc
 from geopy.geocoders import Nominatim
 
-# from functionality_maps import Maps
+# from functionality_maps import f_maps
 import sys
 # sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
 # if __name__ == '__main__':
-from functionality_maps import Maps
+from functionality_maps import f_maps
 from functionality_maps import paths
 
 from assets import run_relevant_variables
@@ -23,11 +23,11 @@ path_wca = '/assets/Geo/world_country_area.csv'
 fields_wca = ['ADMIN', 'ISO_A3', 'Area_total_km2']
 aliases_wca = ['Code', 'Country', 'Area [km\u00b2]']
 
-gdf_world = Maps.load_gdf_from_csv(path=paths.path_wca)
-pdf_d1 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[1]])
-pdf_d2 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[2]])
-pdf_d3 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[3]])
-pdf_d4 = Maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[4]])
+gdf_world = f_maps.load_gdf_from_csv(path=paths.path_wca)
+pdf_d1 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[1]])
+pdf_d2 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[2]])
+pdf_d3 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[3]])
+pdf_d4 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[4]])
 pdf_zips = pdf_d4['postcode']  # For indexing
 
 company_name = 'D1tt0'
@@ -172,7 +172,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
     pdf_countriesNo = pdf.shape[0]
     print(f'Countries found={pdf_countriesNo}')
     if l_countries:
-        fg_countries = Maps.get_feature_group_countries(gdf_world=pdf,
+        fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
                                                         l_countries=l_countries,
                                                         key_filter='ADMIN',
                                                         fields=paths.fields_wca,
@@ -187,7 +187,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         pdf = pdf_d1[pdf_states.isin(l_states)]
 
         print(f'States found={pdf.shape[0]}')
-        fg_state = Maps.get_feature_group(pdf, category)
+        fg_state = f_maps.get_feature_group(pdf, category)
         if fg_state is not None:
             l_fg.append(fg_state)
 
@@ -197,7 +197,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         pdf_regions = pdf_d2['NAME_2']  # For indexing
         pdf = pdf_d2[pdf_regions.isin(l_regions)]
         print(f'Regions found={pdf.shape[0]}')
-        fg_region = Maps.get_feature_group(pdf, category)
+        fg_region = f_maps.get_feature_group(pdf, category)
         if fg_region is not None:
             l_fg.append(fg_region)
 
@@ -207,7 +207,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         pdf_districts = pdf_d3['NAME_3']  # For indexing
         pdf = pdf_d3[pdf_districts.isin(l_districts)]
         print(f'Districts found={pdf.shape[0]}')
-        fg_district = Maps.get_feature_group(pdf, category)
+        fg_district = f_maps.get_feature_group(pdf, category)
         if fg_district is not None:
             l_fg.append(fg_district)
 
@@ -221,7 +221,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         pdf = pdf_d4[pdf_zips.isin(l_zips)]
         print(f'l_zips:{l_zips}')
         print(f'Zips found={pdf.shape[0]}')
-        fg_zip = Maps.get_feature_group(pdf, category)
+        fg_zip = f_maps.get_feature_group(pdf, category)
         if fg_zip is not None:
             l_fg.append(fg_zip)
 
@@ -236,21 +236,21 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         #     path = f'data_loaded_{company}.json'
         #     print(f'path={path}')
         #     # company_name = json.loads(path)
-        #     company_name = Maps.read_dict_temp(path)
+        #     company_name = f_maps.read_dict_temp(path)
         #     print(f'company_name: {company_name}')
         # except Exception as ex:
         #     print(ex)
 
-        # company = Maps.try_read_dict_temp()[0]
+        # company = f_maps.try_read_dict_temp()[0]
 
 
-        fm = Maps.get_folium_map_countries(l_fg,d_company=Maps.read_dict_temp(file_used))
+        fm = f_maps.get_folium_map_countries(l_fg,d_company=f_maps.read_dict_temp(file_used))
         # fm = folium.Map()
 
         print(f'fm:{fm}, type:{type(fm)}')
         print(270)
         name_map = 'map_right'
-        Maps.write_map_temp(fm, name_map=name_map)
+        f_maps.write_map_temp(fm, name_map=name_map)
         map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),
                            width='100%',
                            height='750'

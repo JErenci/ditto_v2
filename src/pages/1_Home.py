@@ -13,17 +13,17 @@ sys.path.append(".")
 import sys
 sys.path.insert(0, '..')
 sys.path.insert(0, '../..')
-# from src.functionality import basic, Maps
+# from src.functionality import basic, f_maps
 # from src import run_variables
 
-from functionality_maps import Maps
+from functionality_maps import f_maps
 from assets import run_relevant_variables
 company_name = run_relevant_variables.company_name
 file_used = run_relevant_variables.file_used
 logging_Home = run_relevant_variables.logging_Home
 base64_decoded_company_image = run_relevant_variables.img_logo
 base64_decoded_user_image = run_relevant_variables.img_user
-# from functionality_maps import paths
+# from functionality_f_maps import paths
 
 dash.register_page(__name__, path='/')
 
@@ -377,14 +377,14 @@ def update_user_image(contents):
           config_prevent_initial_callbacks=True
           )
 def update_company_map(contents):
-    fm = Maps.get_folium_map_countries(
+    fm = f_maps.get_folium_map_countries(
         [],
-        Maps.read_dict_temp(file_used)
+        f_maps.read_dict_temp(file_used)
     )
     print(f'fm:{fm}, type:{type(fm)}')
     print(270)
     name_map = 'map_right'
-    Maps.write_map_temp(fm, name_map=name_map)
+    f_maps.write_map_temp(fm, name_map=name_map)
     map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),
                           width='100%',
                           height='750'
