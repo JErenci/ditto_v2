@@ -5,6 +5,14 @@ import folium
 
 path_map_empty ='./assets/Geo/Map_empty.html'
 path_wca='./assets/Geo/world_country_area.csv'
+stores = 'pdf_all_stores.json'
+
+d_stores_logo = {
+    'sportscheck' : 'assets/SportScheck/1_Home/logo.png',
+    'decathlon' : 'assets/Decathlon/1_Home/Decathlon_Logo.jpg',
+    'intersport' : 'assets/Intersport/1_Home/logo.jpg'
+}
+
 fields_wca=['ADMIN',	'ISO_A3',	'Area_total_km2']
 aliases_wca=['Code','Country','Area [km\u00b2]']
 
@@ -62,4 +70,3 @@ aliases = {
     l_d_dropdown_map[3]: ['Country', 'Bundesland', 'Bezirk', 'Kreis'],
     l_d_dropdown_map[4]: ['Locality/ZIP', 'Name']
 }
-
