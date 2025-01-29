@@ -229,9 +229,6 @@ def load_census(
     # pdf = pdf.astype({col: 'int32' for col in pdf.select_dtypes('int64').columns})
     return pdf
 
-
-
-
 def parse_geometry(
     filename:str, 
     map_col:str='id',
@@ -254,8 +251,6 @@ def parse_geometry(
             gdf[colname] = gdf[colname].fillna(0).astype(int)
 
     return pdf
-    
-
 
 def load_geometry(
     filename:str=None,
