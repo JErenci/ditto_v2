@@ -458,24 +458,3 @@ def gen_maps(l_adm:list, l_gdf:list, l_name_adm:list, l_tooltip:list, is_logging
     
     
     return fm
-
-import requests
-
-def download_gpkg_country(country_ISO_3:str):
-    url=f'https://geodata.ucdavis.edu/gadm/gadm4.1/gpkg/gadm41_{country_ISO_3}.gpkg'
-    local_filename = f'assets/Geo/GADM/gadm41_{country_ISO_3}.gpkg'
-
-    # Send a GET request to the URL
-    with requests.get(url, stream=True) as response:
-        response.raise_for_status()  # Check if the request was successful
-
-        # Open a local file with write-binary mode
-        with open(local_filename, 'wb') as file:
-            # Write the content to the local file in chunks
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-    print(f"File downloaded as {local_filename}")
-
-    # Example usage
-    # download_file(url, local_filename)
-    return local_filename

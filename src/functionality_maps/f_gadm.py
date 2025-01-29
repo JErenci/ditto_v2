@@ -159,22 +159,20 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
             ).add_to(fg)
 
             loca = row['location']
-            print(f'loca={loca}')
-            
+            # print(f'loca={loca}')
+
             location_bbox = loca['raw']['boundingbox']
-            points_rect = [[location_bbox[0],
-                            location_bbox[2]],
-                            [location_bbox[1],
-                             location_bbox[3]]]
-            
             print(f'location_bbox={location_bbox}')
+            points_rect = [[location_bbox[0],location_bbox[2]],[location_bbox[1],location_bbox[3]]]
+            print(f'points_rect={points_rect}')
+
             points_area = [
                     (location_bbox[0], location_bbox[2]),  # (min_lat, min_lon)
                     (location_bbox[1], location_bbox[2]),  # (max_lat, min_lon)
                     (location_bbox[1], location_bbox[3]),  # (max_lat, max_lon)
                     (location_bbox[0], location_bbox[3])   # (min_lat, max_lon)
                 ]
-            print(f'points={points_rect}')
+            print(f'points_area={points_area}')
             polygon = Polygon(points_area)
 
             # Define the projection (WGS84 to UTM)
@@ -182,16 +180,17 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
             proj_utm = Proj(proj='utm', zone=33, ellps='WGS84')  # Adjust the UTM zone as needed
 
             # Project the polygon to UTM
-            projected_points = [transform(proj_wgs84, proj_utm, lon, lat) for lat, lon in points]
+            projected_points = [transform(proj_wgs84, proj_utm, lon, lat) for lat, lon in points_area]
             projected_polygon = Polygon(projected_points)
 
             # Compute the area in square meters
             area_sq_meters = projected_polygon.area
 
             print(f'area_sq_meters={area_sq_meters}')
-            folium.Rectangle(bounds=points, color='#ff7800', fill=True, 
-                                fill_color='#ffff00', fill_opacity=0.2, 
-                                tooltip=f'<b>Area:</b> {area_sq_meters}  m2', 
-                            ).add_to(fg)
+            
+            folium.Rectangle(bounds=points_rect, color='#ff7800', fill=True, 
+                        fill_color='#ffff00', fill_opacity=0.2, 
+                        tooltip=f'<b>Area:</b> {area_sq_meters}  m2', 
+                    ).add_to(fg)
         l_fg.append(fg)
     return l_fg
