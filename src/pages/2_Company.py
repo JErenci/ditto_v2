@@ -9,7 +9,7 @@ from geopy.geocoders import Nominatim
 import sys
 # sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
 # if __name__ == '__main__':
-from functionality_maps import f_maps
+from functionality_maps import f_maps, f_gadm
 from functionality_maps import paths
 
 from assets import run_relevant_variables
@@ -30,8 +30,17 @@ pdf_d3 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[3]])
 pdf_d4 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[4]])
 pdf_zips = pdf_d4['postcode']  # For indexing
 
+pdf_d1 = pdf_d1.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
+pdf_d2 = pdf_d2.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
+pdf_d3 = pdf_d3.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
+pdf_d4 = pdf_d4.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
+
+pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
+
+
 company_name = 'D1tt0'
 
+comp_text_Geo = html.H3('Geo Data')
 comp_dropCountry = dcc.Dropdown(
                 id='dropdown_country_filter0',
                 options=gdf_world.ADMIN.unique(),
@@ -82,6 +91,20 @@ comp_dropZIP = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select {paths.l_d_dropdown_map[4]}(s)",
             )
+
+
+comp_text_Sales = html.H3('Sales Data')
+comp_dropSales = dcc.Dropdown(
+                id='dropdown_sales',
+                options=pdf_stores['store'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select Store(s)",
+            )
+
 comp_pdf_found = html.Div(id='pdf_world_found')
 comp_map = html.Div(id='map_figure_right')
 
@@ -98,11 +121,16 @@ layout = dbc.Container(
 
     dbc.Row([
         dbc.Col([
+            comp_text_Geo,      # Geo component separaton
             comp_dropCountry,   # COUNTRY
             comp_dropState,     # STATE
             comp_dropRegion,    # REGION
             comp_dropDistrict,  # DISTRICT
             comp_dropZIP,       # ZIP
+
+            comp_text_Sales,    # Sales component separaton
+            comp_dropSales,      # Sales
+
         ], width={'size': 5}),
         dbc.Col([
             comp_pdf_found,     # MAP
@@ -121,9 +149,10 @@ Input(component_id='dropdown_country_filter1', component_property='value'),#STAT
 Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
 Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
 Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
+Input(component_id='dropdown_sales', component_property='value'),#Stores
 prevent_initial_call=True
 )
-def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
+def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_stores):
     dropdown_value = paths.l_d_dropdown_map
 
     print(f'gen_map_countryX')
@@ -179,7 +208,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
                                                         aliases=paths.aliases_wca)
         if fg_countries is not None:
             l_fg.append(fg_countries)
-    print(308)
+    # print(308)
     #STATES
     if l_states:
         category = paths.l_d_dropdown_map[1]
@@ -224,6 +253,25 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips):
         fg_zip = f_maps.get_feature_group(pdf, category)
         if fg_zip is not None:
             l_fg.append(fg_zip)
+
+    if (l_stores):
+        print(pdf_stores.head(1))
+        pdf = pdf_stores[pdf_stores['store'].isin(l_stores)]
+
+        
+        if l_states:
+            pdf = pdf[pdf['GADM_1'].isin(l_states)]
+        if l_regions:
+            pdf = pdf[pdf['GADM_2'].isin(l_regions)]
+        if l_districts:
+            pdf = pdf[pdf['GADM_3'].isin(l_districts)]
+
+        print(f'l_stores:{l_stores}')
+        print(f'Stores total={pdf_stores.shape[0]}')
+        print(f'Stores found={pdf.shape[0]}')
+        l_fg_stores = f_gadm.get_fg_store(pdf, l_stores)
+        if l_fg_stores is not None:
+            l_fg.extend(l_fg_stores)
 
     if l_fg: #list of feature groups is NOT empty
         print(f"l_fg:{l_fg}")
