@@ -74,6 +74,84 @@ company = {
 }
 
 
+## FILT info
+
+dict_id_bundeslaender = {
+    '01':  'Schleswig-Holstein',
+    '02':  'Hamburg',
+    '03':  'Niedersachsen',
+    '04':  'Bremen',
+    '05':  'Nordrhein-Westfalen',
+    '06':  'Hessen',
+    '07':  'Rheinland-Pfalz',
+    '08':  'Baden-Württemberg',
+    '09':  'Bayern',
+    '10': 'Saarland',
+    '11': 'Berlin',
+    '12': 'Brandenburg',	
+    '13': 'Mecklenburg-Vorpommern',
+    '14': 'Sachsen',
+    '15': 'Sachsen-Anhalt',
+    '16': 'Thüringen'
+}
+
+dict_bundeslaender_id = {
+    'Schleswig-Holstein'    : '01',
+    'Hamburg'               : '02',
+    'Niedersachsen'         : '03',
+    'Bremen'                : '04',
+    'Nordrhein-Westfalen'   : '05',
+    'Hessen'                : '06',
+    'Rheinland-Pfalz'       : '07',
+    'Baden-Württemberg'     : '08',
+    'Bayern'                : '09',
+    'Saarland'              : '10',
+    'Berlin'                : '11',
+    'Brandenburg'           : '12',
+    'Mecklenburg-Vorpommern': '13',
+    'Sachsen'               : '14',
+    'Sachsen-Anhalt'        : '15',
+    'Thüringen'             : '16'
+}
+
+
+color_green  = (0.0, 128.0, 0, 255.0)
+color_yellow = (255.0, 255.0, 0, 255.0)
+color_red    = (255.0, 0.0, 0, 255.0)
+color_blue   = (0.0, 0.0, 255.0, 255.0)
+color_orange = (255.0, 165.0, 0.0, 255.0)
+color_light_green = (144.0, 238.0, 144.0, 255.0)
+color_dark_green = (0.0, 100.0, 0.0, 255.0)
+
+# Define a function to divide a tuple by a divisor
+def divide_tuple(color_tuple, divisor):
+    return tuple(value / divisor for value in color_tuple)
+
+dict_colors = {
+    4 : 'dark_green',
+    3 : 'green',
+    2 : 'yellow',
+    1 : 'orange',
+    0 : 'red',
+}
+
+
+dict_tuple_colors = {
+    4 : color_dark_green,
+    3 : color_green,
+    2 : color_yellow,
+    1 : color_orange,
+    0 : color_red,
+}
+
+dict_tuple_colors_norm = {
+    4 : divide_tuple(color_dark_green, 255),
+    3 : divide_tuple(color_green, 255),
+    2 : divide_tuple(color_yellow,255),
+    1 : divide_tuple(color_orange,255),
+    0 : divide_tuple(color_red,255),
+}
+
 # company = {
 #     'name': 'Baumgartner',
 #     # 'map' : 'company',

@@ -1,6 +1,8 @@
 import dash
 import folium
+import numpy as np
 import pandas as pd
+import plotly.express as px
 from dash import callback, html, dcc, Input, Output, dash_table, no_update
 import dash_bootstrap_components as dbc
 from geopy.geocoders import Nominatim
@@ -12,7 +14,11 @@ import sys
 from functionality_maps import f_maps, f_gadm
 from functionality_maps import paths
 
+import geopandas as gpd
+
 from assets import run_relevant_variables
+from src.functionality import colors
+from src.functionality_maps import Defs
 company_name = run_relevant_variables.company_name
 file_used = run_relevant_variables.file_used
 
@@ -36,6 +42,8 @@ pdf_d3 = pdf_d3.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, r
 pdf_d4 = pdf_d4.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
 
 pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
+# Load the saved GeoJSON file into a new GeoDataFrame
+gdf_zensus_de = gpd.read_file('JupNB\DE_Data\VG250_GEM_WGS84.shp')
 
 
 company_name = 'D1tt0'
@@ -105,7 +113,21 @@ comp_dropSales = dcc.Dropdown(
                 placeholder=f"Select Store(s)",
             )
 
+comp_text_metadata = html.H3('Metadata')
+comp_dropMetadata = dcc.Dropdown(
+                id='dropdown_metadata',
+                options=['EWZ', 'KFL', 'EPK'],
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select Variable(s)",
+            )
+
+
 comp_pdf_found = html.Div(id='pdf_world_found')
+comp_fig = html.Div(id='fig_bottom')
 comp_map = html.Div(id='map_figure_right')
 
 # layout = dbc.Container(
@@ -130,7 +152,9 @@ layout = dbc.Container(
 
             comp_text_Sales,    # Sales component separaton
             comp_dropSales,      # Sales
-
+            comp_text_metadata,  # Metatdata component separation
+            comp_dropMetadata,   # Metadata,
+            comp_fig
         ], width={'size': 5}),
         dbc.Col([
             comp_pdf_found,     # MAP
@@ -144,16 +168,19 @@ fluid=True,     # Stretch to use all screen
 @callback(
 # Output(component_id='pdf_world_found', component_property='children'),
 Output(component_id='map_figure_right', component_property='children'),
+# Output(component_id='fig_bottom', component_property='children'),
 Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
 Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
 Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
 Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
 Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
 Input(component_id='dropdown_sales', component_property='value'),#Stores
+Input(component_id='dropdown_metadata', component_property='value'),#Metadata
 prevent_initial_call=True
 )
-def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_stores):
+def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_stores, l_metadata):
     dropdown_value = paths.l_d_dropdown_map
+    fig = None
 
     print(f'gen_map_countryX')
     print(f'')
@@ -273,30 +300,102 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_st
         if l_fg_stores is not None:
             l_fg.extend(l_fg_stores)
 
+    if (l_metadata):
+        print(f'l_metadata:{l_metadata}')
+        print(f'Metadata found={len(l_metadata)}')
+
+        l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
+        print(f'l_bundeslaender:{l_bundeslaender}')
+
+        print(f'gdf_zensus_de:{gdf_zensus_de.shape}')
+        gdf_map = gdf_zensus_de[gdf_zensus_de['SN_L'].isin(l_bundeslaender)]
+        gdf_map = gdf_map.drop(['BEGINN','WSK'],axis=1)
+        gdf_map = gdf_map.reset_index(drop=True)
+        print(f'gdf_map:{gdf_map.shape}')
+
+        
+        # Norm to max value
+        print(f'Max EPK={gdf_map["EPK"].max()}')
+        gdf_map['EPK_norm'] = gdf_map['EPK'] / gdf_map['EPK'].max()
+
+        gdf_map['EPK'] = gdf_map['EPK'].fillna(0)
+        gdf_map['EPK_norm'] = gdf_map['EPK_norm'].fillna(0)
+        print(f'Max EPK_norm={gdf_map["EPK_norm"].max()}')
+        print(f'Min EPK_norm={gdf_map["EPK_norm"].min()}')
+
+        # Replace Inf values with NaN in 'column1'
+        gdf_map['EPK_norm'] = gdf_map['EPK_norm'].replace([np.inf, -np.inf], np.nan)
+        print(f'gdf_map shape={gdf_map.shape}')
+
+        # Drop rows with NaN values in 'column1'
+        gdf_map = gdf_map.dropna(subset=['EPK_norm'])
+        print(f'gdf_map shape={gdf_map.shape}')
+
+        # Apply the function to create RGBA tuples for column C
+        gdf_map['color_rgba_detailed'] = colors.rgba_from_value(gdf_map, 'blue', 'EPK_norm', 1.0)
+
+        # Define custom quantile boundaries
+        l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]
+
+        # Use pd.qcut() to create uneven quantiles
+        gdf_map['quantile'] = pd.qcut(gdf_map['EPK_norm'], q=l_quantiles, labels=False, duplicates='drop')
+        print(f'max={gdf_map['quantile'].max()}')
+        # Ensure alpha is between 0 and 1
+        alpha = 1.0 * (1/len(l_quantiles))
+
+        print(f'alpha={alpha}')
+        gdf_map['color_rgba_tuple'] = colors.rgba_from_value(gdf_map, 'blue', 'quantile', alpha)
+
+        gdf_map['color'] = gdf_map['quantile'].map(Defs.dict_tuple_colors)
+        gdf_map['color_norm'] = gdf_map['quantile'].map(Defs.dict_tuple_colors_norm)
+
+        l_fg_metadata = []
+        for it,i in enumerate(l_quantiles):
+            print(f'Processing quantile [{it}/{len(l_quantiles)}]')
+            gdf_quantile = gdf_map[gdf_map['quantile'] == it]
+            print(f'color={Defs.dict_colors[it]}, len gdf_map [{len(gdf_quantile)}]')
+            if (gdf_quantile.empty is not True):
+                fg = f_maps.get_folium_featuregroup_color(
+                    pdf=gdf_quantile, 
+                    fg_name=f'{it+1} Quantile  [{i*100}%] [{len(gdf_quantile)}]',
+                    fields=['GEN','BEZ','EWZ','ARS', 'EWZ', 'EPK', 'EPK_norm', 'quantile'],
+                    aliases=['Name','Type','Pop','ARS', 'EinwohnerZahl', 'Density', 'Normed density', 'Quantile'],
+                    fill_color=Defs.dict_colors[it]
+                )
+                l_fg_metadata.append(fg)
+        
+        print(f'l_fg_metadata:{len(l_fg_metadata)}')
+
+        # Compute the centroid of each geometry
+        gdf_map['centroid'] = gdf_map['geometry'].centroid
+
+        # Extract latitude and longitude from the Point geometries
+        gdf_map['lon'] = gdf_map['centroid'].x
+        gdf_map['lat'] = gdf_map['centroid'].y
+
+        if l_fg_metadata is not None:
+            l_fg.extend(l_fg_metadata)
+
+            gdf_map = gdf_map.sort_values(by='EPK', ascending=True)
+            gdf_map['quantile'] = gdf_map['quantile'].astype('str')#.drop_duplicates().values
+
+
+            print('MarketClusters')
+            fg_mc = f_maps.gen_markercluster_sum_fg(gdf=gdf_map, name='Einwohnerzahl',
+                                    lat='lat', lon='lon', column_sum = 'EWZ')
+            if fg_mc is not None:
+                l_fg.extend([fg_mc])
+
+
+    print(f'Feature Groups!')
     if l_fg: #list of feature groups is NOT empty
         print(f"l_fg:{l_fg}")
         print("Generating map!")
 
-        # company = request.authorization['username']
-        # print(f'company: {company}')
-        # # company_name = Defs.company[company]
-        # try:
-        #     path = f'data_loaded_{company}.json'
-        #     print(f'path={path}')
-        #     # company_name = json.loads(path)
-        #     company_name = f_maps.read_dict_temp(path)
-        #     print(f'company_name: {company_name}')
-        # except Exception as ex:
-        #     print(ex)
-
-        # company = f_maps.try_read_dict_temp()[0]
-
-
         fm = f_maps.get_folium_map_countries(l_fg,d_company=f_maps.read_dict_temp(file_used))
-        # fm = folium.Map()
 
         print(f'fm:{fm}, type:{type(fm)}')
-        print(270)
+        print('Writing map')
         name_map = 'map_right'
         f_maps.write_map_temp(fm, name_map=name_map)
         map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),

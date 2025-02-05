@@ -11,6 +11,9 @@ import sys
 
 import folium.plugins
 
+import folium
+from folium.plugins import MarkerCluster
+
 sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
 from functionality_maps import Defs
 from functionality_maps import paths
@@ -107,7 +110,7 @@ def get_folium_featuregroup(pdf: pd.DataFrame,
                             is_highlighted: bool = True  # does NOT add weight to map
                             ) -> folium.FeatureGroup:
     # Avoid mutable elements
-    if fields is None:  # 👍
+    if fields is None:  # 
         fields = ['ISO_A3', 'ADMIN']
     if aliases is None:
         aliases = ['Country Code:', 'Country Name:']
@@ -458,3 +461,110 @@ def gen_maps(l_adm:list, l_gdf:list, l_name_adm:list, l_tooltip:list, is_logging
     
     
     return fm
+
+def get_folium_featuregroup_color(pdf: pd.DataFrame,
+                                  fg_name: str,
+                                    fields: list = None,
+                                    aliases: list = None,
+                                    is_tooltip: bool = True,  # does NOT add weight to map
+                                    is_highlighted: bool = True,  # does NOT add weight to map
+                                    fill_color:str = 'blue') -> folium.FeatureGroup:
+    # Avoid mutable elements
+    if fields is None:  # 
+        fields = ['ISO_A3', 'ADMIN']
+    if aliases is None:
+        aliases = ['Country Code:', 'Country Name:']
+
+    fg = folium.FeatureGroup(name=fg_name)
+
+    # Add hover functionality_maps.
+    style_function = lambda x: {'fillColor': fill_color,
+                                'color': 'black',
+                                'line_color': 'red',
+                                'fillOpacity': 0.3,
+                                'weight': 0.1}
+
+    tooltip = None
+    if is_tooltip:
+        tooltip = folium.features.GeoJsonTooltip(
+            fields=fields,
+            aliases=aliases
+        )
+
+    highlight_function = None
+    if is_highlighted:
+        highlight_function = lambda x: {'fillColor': 'red',
+                                        'color': 'black',
+                                        'lineColor': 'red',
+                                        'fillOpacity': 0.50,
+                                        'weight': 0.1}
+
+    gj = folium.GeoJson(
+        data=pdf,
+        # nan_fill_opacity=0.1,
+        style_function=style_function,
+        # line_color='black',
+        highlight_function=highlight_function,
+        tooltip=tooltip
+    )
+
+    fg.add_child(gj)
+    return fg
+
+from folium import Marker
+from jinja2 import Template
+class MarkerWithProps(Marker):
+    _template = Template(u"""
+        {% macro script(this, kwargs) %}
+        var {{this.get_name()}} = L.marker(
+            [{{this.location[0]}}, {{this.location[1]}}],
+            {
+                icon: new L.Icon.Default(),
+                {%- if this.draggable %}
+                draggable: true,
+                autoPan: true,
+                {%- endif %}
+                {%- if this.props %}
+                props : {{ this.props }} 
+                {%- endif %}
+                }
+            )
+            .addTo({{this._parent.get_name()}});
+        {% endmacro %}
+        """)
+    def __init__(self, location, popup=None, tooltip=None, icon=None,
+                 draggable=False, props = None ):
+        super(MarkerWithProps, self).__init__(location=location,popup=popup,tooltip=tooltip,icon=icon,draggable=draggable)
+        self.props = json.loads(json.dumps(props))    
+
+
+def gen_markercluster_sum_fg (gdf, name:str, lat, lon, column_sum, ):
+    fg_mc = folium.FeatureGroup(name=name)
+
+    icon_create_function = '''
+        function(cluster) {
+            var markers = cluster.getAllChildMarkers();
+            var sum = 0;
+            for (var i = 0; i < markers.length; i++) {
+                sum += markers[i].options.props.population / 1000000;
+                sum = Math.round(sum * 1000) / 1000;
+            }
+            var avg = sum;
+
+            return L.divIcon({
+                html: '<b>' + avg + 'M</b>',
+                className: 'marker-cluster marker-cluster-small',
+                iconSize: new L.Point(50, 50)
+            });
+        }
+    '''
+
+    marker_cluster = MarkerCluster(icon_create_function=icon_create_function)
+
+    for index, row in gdf.iterrows():
+        marker = MarkerWithProps(location=[row[lat], row[lon]], 
+                    props={'population': row[column_sum]})
+        marker.add_to(marker_cluster)
+
+    marker_cluster.add_to(fg_mc)
+    return fg_mc
