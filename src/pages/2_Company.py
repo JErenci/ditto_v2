@@ -358,8 +358,8 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_st
                 fg = f_maps.get_folium_featuregroup_color(
                     pdf=gdf_quantile, 
                     fg_name=f'{it+1} Quantile  [{i*100}%] [{len(gdf_quantile)}]',
-                    fields=['GEN','BEZ','EWZ','ARS', 'EWZ', 'EPK', 'EPK_norm', 'quantile'],
-                    aliases=['Name','Type','Pop','ARS', 'EinwohnerZahl', 'Density', 'Normed density', 'Quantile'],
+                    fields=['GEN','BEZ','EWZ','ARS', 'EWZ', 'KFL', 'EPK', 'EPK_norm', 'quantile'],
+                    aliases=['Name','Type','Pop','ARS', 'EinwohnerZahl', 'Area [Km2]', 'Density', 'Normed density', 'Quantile'],
                     fill_color=Defs.dict_colors[it]
                 )
                 l_fg_metadata.append(fg)
