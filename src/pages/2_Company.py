@@ -124,7 +124,17 @@ comp_dropMetadata = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select Variable(s)",
             )
-
+comp_text_coverage = html.H3('Geographic coverage')
+comp_dropCoverage = dcc.Dropdown(
+                id='dropdown_coverage',
+                options=[1,5,10,20,30,50],
+                value=[30],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select Area of Influece around Store[Km]",
+            )
 
 comp_pdf_found = html.Div(id='pdf_world_found')
 comp_fig = html.Div(id='fig_bottom')
@@ -154,6 +164,8 @@ layout = dbc.Container(
             comp_dropSales,      # Sales
             comp_text_metadata,  # Metatdata component separation
             comp_dropMetadata,   # Metadata,
+            comp_text_coverage,  # Store Coverage text separator
+            comp_dropCoverage,   # Store Coverage [Km]
             comp_fig
         ], width={'size': 5}),
         dbc.Col([
@@ -176,13 +188,15 @@ Input(component_id='dropdown_country_filter3', component_property='value'),#DIST
 Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
 Input(component_id='dropdown_sales', component_property='value'),#Stores
 Input(component_id='dropdown_metadata', component_property='value'),#Metadata
+Input(component_id='dropdown_Coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
 )
-def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_stores, l_metadata):
+def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, 
+                     l_stores, l_metadata, l_coverage):
     dropdown_value = paths.l_d_dropdown_map
     fig = None
 
-    print(f'gen_map_countryX')
+    print(f'gen_map_country')
     print(f'')
 
     print(f'dropdown_value:{dropdown_value}')
@@ -309,6 +323,9 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_st
 
         print(f'gdf_zensus_de:{gdf_zensus_de.shape}')
         gdf_map = gdf_zensus_de[gdf_zensus_de['SN_L'].isin(l_bundeslaender)]
+        print(f'After filtering States, gdf_map.shape:{gdf_map.shape}')
+
+
         gdf_map = gdf_map.drop(['BEGINN','WSK'],axis=1)
         gdf_map = gdf_map.reset_index(drop=True)
         print(f'gdf_map:{gdf_map.shape}')
@@ -385,6 +402,8 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, l_st
                                     lat='lat', lon='lon', column_sum = 'EWZ')
             if fg_mc is not None:
                 l_fg.extend([fg_mc])
+
+    if(l_coverage):
 
 
     print(f'Feature Groups!')

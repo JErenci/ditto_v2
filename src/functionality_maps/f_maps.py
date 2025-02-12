@@ -568,3 +568,52 @@ def gen_markercluster_sum_fg (gdf, name:str, lat, lon, column_sum, ):
 
     marker_cluster.add_to(fg_mc)
     return fg_mc
+
+from functools import partial
+import pyproj
+from shapely.geometry import Point
+from shapely.ops import transform
+from pyproj import Transformer
+
+def transform_wgs84_aeqd(lon, lat) :
+    point_transformed =Transformer.from_crs(4326, 3857, always_xy=True).transform(float(lat),float(lon))
+    return point_transformed
+
+def transform_aeqd_wgs84(y,x) :
+    point_transformed = Transformer.from_crs(3857, 4326, always_xy=True).transform(y,x)
+    return point_transformed
+
+# create a circle with a specified radius in meters around a point defined using latitude and longitude
+def circle_around_lat_lon_point(lon, lat, radius) : 
+    # lon, lat = 0, 42  # Example coordinates for San Francisco
+    # radius = 30000  # Radius in meters
+
+    local_azimuthal_projection = "+proj=aeqd +R=6371000 +units=m +lat_0={} +lon_0={}".format(lat, lon)
+    wgs84_to_aeqd = partial(pyproj.transform, pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"), pyproj.Proj(local_azimuthal_projection))
+    aeqd_to_wgs84 = partial(pyproj.transform, pyproj.Proj(local_azimuthal_projection), pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"))
+
+    center = Point(float(lon), float(lat))
+    point_transformed = transform(wgs84_to_aeqd, center)
+    # print(f'x{point_transformed.x}, y={point_transformed.y}')
+    buffer = point_transformed.buffer(radius)
+    circle_poly = transform(aeqd_to_wgs84, buffer)
+    return circle_poly
+
+from geopy.distance import geodesic
+
+
+def compute_dist_to_lat_lon(gdf,lon,lat,col_out:str='dist',units:str='km',round_dec:int=2):
+    point_of_interest = (lat,lon)
+    if units == 'km':
+        gdf[col_out] = gdf.geometry.apply(
+            lambda row: geodesic(point_of_interest, (row.y, row.x)).kilometers)
+    elif units == 'm':
+        gdf[col_out] = gdf.geometry.apply(
+            lambda row: geodesic(point_of_interest, (row.y, row.x)).meters)
+    elif units == 'mi':
+        gdf[col_out] = gdf.geometry.apply(
+            lambda row: geodesic(point_of_interest, (row.y, row.x)).miles)
+    else:
+        raise ValueError("units must be one of the following [km,m,mi]")
+    gdf[col_out] = round(gdf[col_out], round_dec)
+    return gdf
