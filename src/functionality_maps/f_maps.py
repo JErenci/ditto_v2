@@ -101,6 +101,49 @@ def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
 
     return fm
 
+def get_folium_geojson(pdf: pd.DataFrame,
+                        fields: list = None,
+                        aliases: list = None,
+                        is_tooltip: bool = True,  # does NOT add weight to map
+                        is_highlighted: bool = True  # does NOT add weight to map
+                        ) -> folium.GeoJson:
+    # Avoid mutable elements
+    if fields is None:  # 
+        fields = ['ISO_A3', 'ADMIN']
+    if aliases is None:
+        aliases = ['Country Code:', 'Country Name:']
+
+    # Add hover functionality_maps.
+    style_function = lambda x: {'fillColor': 'blue',
+                                'color': 'black',
+                                'line_color': 'red',
+                                'fillOpacity': 0.3,
+                                'weight': 0.1}
+
+    tooltip = None
+    if is_tooltip:
+        tooltip = folium.features.GeoJsonTooltip(
+            fields=fields,
+            aliases=aliases
+        )
+
+    highlight_function = None
+    if is_highlighted:
+        highlight_function = lambda x: {'fillColor': 'red',
+                                        'color': 'black',
+                                        'lineColor': 'red',
+                                        'fillOpacity': 0.50,
+                                        'weight': 0.1}
+
+    gj = folium.GeoJson(
+        data=pdf,
+        # nan_fill_opacity=0.1,
+        style_function=style_function,
+        # line_color='black',
+        highlight_function=highlight_function,
+        tooltip=tooltip
+    )
+    return gj
 
 def get_folium_featuregroup(pdf: pd.DataFrame,
                             fg_name: str,
