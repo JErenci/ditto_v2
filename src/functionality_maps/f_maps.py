@@ -119,13 +119,13 @@ def get_folium_geojson(pdf: pd.DataFrame,
                                 'line_color': 'red',
                                 'fillOpacity': 0.3,
                                 'weight': 0.1}
-
-    tooltip = None
     if is_tooltip:
         tooltip = folium.features.GeoJsonTooltip(
             fields=fields,
             aliases=aliases
         )
+    else:
+        tooltip = None
 
     highlight_function = None
     if is_highlighted:
@@ -660,3 +660,55 @@ def compute_dist_to_lat_lon(gdf,lon,lat,col_out:str='dist',units:str='km',round_
         raise ValueError("units must be one of the following [km,m,mi]")
     gdf[col_out] = round(gdf[col_out], round_dec)
     return gdf
+
+def overlay_shapes(gdf_circle: gpd.GeoDataFrame,
+                   col_perc:str,
+                   d_columns:dict,
+                   epsg:int=6933, num_dec:int=2) -> gpd.GeoDataFrame:
+    
+    for k,v in d_columns.items():
+        key = k + '_int'
+        if v['is_norm']:
+            gdf_circle[key] = gdf_circle[k] * gdf_circle[col_perc]
+
+        if v['is_int']:
+            gdf_circle[key] = gdf_circle[key].astype(int)
+
+    return gdf_circle
+    
+
+def merge_shapes(gdf_circle: gpd.GeoDataFrame,
+                 l_col_percs:list,
+                 d_percs:dict, perc_prefix:str='perc',
+                 epsg:int=6933, num_dec:int=2, is_logging:bool=False) -> gpd.GeoDataFrame:
+    
+    l_new_columns = []
+    # Generate the Merged [Polygon, DataFrame]
+    poly_merged = gdf_circle.geometry.union_all()
+    gdf_merged = gpd.GeoSeries([poly_merged]).to_frame(name='geometry').set_crs(epsg=epsg)
+
+    for col in l_col_percs:
+        gdf_merged[col] = round(gdf_circle[col].sum(), num_dec)
+        col_int = col + '_int'
+        gdf_merged[col_int] = round(gdf_circle[col_int].sum(), num_dec)
+        l_new_columns.append(col)
+        l_new_columns.append(col_int)
+
+    for k,v in d_percs.items():
+        col_key = f'{perc_prefix}_{k}'
+        col_num = f'{v}_int'
+        col_den = v
+        gdf_merged[col_key] = round(gdf_merged[col_num] / gdf_merged[col_den], num_dec)
+        l_new_columns.append(col_key)
+    
+    if is_logging:
+        for col in l_new_columns:
+            print(f'{col} = {gdf_merged.iloc[0][col]}')
+    return gdf_merged
+
+
+    # gdf_geom[col_name] = gdf_geom.geometry.apply(
+    #     lambda row: gdf_poly.geometry.contains(row).any())
+    # if is_logging:
+    #     print(f'overlay_shapes: {gdf_geom[col_name].value_counts()}')
+    # return gdf_geom
