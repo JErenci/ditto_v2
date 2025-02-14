@@ -706,6 +706,23 @@ def merge_shapes(gdf_circle: gpd.GeoDataFrame,
             print(f'{col} = {gdf_merged.iloc[0][col]}')
     return gdf_merged
 
+def get_markers_polygon(gdf:gpd.GeoDataFrame, col_perc:str,
+                        l_tooltip:list,name:str='Markers',
+                        color:str='blue') -> folium.FeatureGroup:
+
+    fg = folium.FeatureGroup(name=name)
+    for index, row in gdf.iterrows():
+        l_msg = [f'{elem}: {row[elem]}' for elem in l_tooltip]
+        tooltip = ','.join(l_msg)
+        # tooltip = folium.Tooltip(f"Locality: {row['GEN']} <br> Distance[Km]: {row['dist']}")
+        # popup = folium.Popup(f"lat: {row['lat']}\nLon: {row['lon']}")
+        folium.Marker(location=[row.lat, row.lon],
+                        # popup=popup,
+                        icon=folium.Icon(color=color),
+                        tooltip=tooltip
+                        ).add_to(fg)
+    return fg
+
 
     # gdf_geom[col_name] = gdf_geom.geometry.apply(
     #     lambda row: gdf_poly.geometry.contains(row).any())
