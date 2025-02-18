@@ -109,9 +109,8 @@ def get_folium_geojson(pdf: pd.DataFrame,
                         is_highlighted: bool = True  # does NOT add weight to map
                         ) -> folium.GeoJson:
     # Avoid mutable elements
-    if fields is None:  # 
+    if fields is None and aliases is None:
         fields = ['ISO_A3', 'ADMIN']
-    if aliases is None:
         aliases = ['Country Code:', 'Country Name:']
 
     # Add hover functionality_maps.
@@ -628,20 +627,35 @@ def transform_aeqd_wgs84(y,x) :
     return point_transformed
 
 # create a circle with a specified radius in meters around a point defined using latitude and longitude
-def circle_around_lat_lon_point(lon, lat, radius) : 
-    # lon, lat = 0, 42  # Example coordinates for San Francisco
-    # radius = 30000  # Radius in meters
+import pyproj
+from shapely import geometry
+from pyproj import Transformer
+import shapely#.ops import transform
+import geopandas as gpd
 
-    local_azimuthal_projection = "+proj=aeqd +R=6371000 +units=m +lat_0={} +lon_0={}".format(lat, lon)
-    wgs84_to_aeqd = partial(pyproj.transform, pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"), pyproj.Proj(local_azimuthal_projection))
-    aeqd_to_wgs84 = partial(pyproj.transform, pyproj.Proj(local_azimuthal_projection), pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"))
-
-    center = Point(float(lon), float(lat))
-    point_transformed = transform(wgs84_to_aeqd, center)
-    # print(f'x{point_transformed.x}, y={point_transformed.y}')
+def circle_latlon(lon, lat, radius) : 
+    # print(f'lon:{lon}, lat:{lat}, radius:{radius}')
+    proj_wgs84 = pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs")
+    proj_aeqd = pyproj.Proj("+proj=aeqd +R=6371000 +units=m +lat_0={} +lon_0={}".format(lat, lon))
+    transformer_wgs84_aeqd = Transformer.from_proj(proj_wgs84, proj_aeqd)
+    transformer_aeqd_wgs84 = Transformer.from_proj(proj_aeqd, proj_wgs84)
+    
+    x,y = transformer_wgs84_aeqd.transform(float(lon), float(lat))
+    # print(f'x:{x}, y:{y}')
+    point_transformed = geometry.Point(x, y)
+    # print(f'point_transformed:{point_transformed}')
     buffer = point_transformed.buffer(radius)
-    circle_poly = transform(aeqd_to_wgs84, buffer)
+    # print(f'buffer={buffer}')
+    
+    circle_poly = shapely.ops.transform(transformer_aeqd_wgs84.transform, buffer)
+    # print(f'circle_poly:{circle_poly}')
+
     return circle_poly
+
+def get_gdf_circle(df:pd.DataFrame, radius_km:int, name:str, color:str='blue') -> gpd.GeoDataFrame:
+    geometry = df.apply(lambda x: circle_latlon(x['lon'], x['lat'], radius = 1000 * radius_km), axis=1)
+    df_out = gpd.GeoDataFrame(df, geometry=geometry ,crs="EPSG:4326")
+    return df_out
 
 from geopy.distance import geodesic
 
@@ -707,7 +721,7 @@ def merge_shapes(gdf_circle: gpd.GeoDataFrame,
             print(f'{col} = {gdf_merged.iloc[0][col]}')
     return gdf_merged
 
-def get_markers_polygon(gdf:gpd.GeoDataFrame, col_perc:str,
+def get_markers_polygon(gdf:gpd.GeoDataFrame,
                         l_tooltip:list,name:str='Markers',
                         color:str='blue') -> folium.FeatureGroup:
 
@@ -724,6 +738,35 @@ def get_markers_polygon(gdf:gpd.GeoDataFrame, col_perc:str,
                         ).add_to(fg)
     return fg
 
+def get_fg_markers(df:pd.DataFrame,
+                   name:str, l_tooltip:list=None, l_popup:list=None,
+                   color:str='blue') -> folium.FeatureGroup:
+
+    fg = folium.FeatureGroup(name=name)
+    tooltip, popup = None, None
+    for index, row in df.iterrows():
+        if l_popup is not None:
+            df_contains_www = df[l_popup].apply(lambda col: col.astype(str).str.contains('www').any(), axis=0)
+            true_columns = df_contains_www.all()
+            if true_columns:
+                l_msg = ''
+                for elem in l_popup:
+                    link = f'''<a href={row[elem]}>{row[elem]}</a>'''
+                    l_msg = [f'{elem}: {link}']
+            else:
+                l_msg = [f'{elem}: {row[elem]}' for elem in l_popup]
+            popup = folium.Popup(''.join(l_msg))
+
+        if l_tooltip is not None:
+            l_msg = [f'{elem}: {row[elem]}' for elem in l_tooltip]
+            tooltip = folium.Tooltip('<br>'.join(l_msg))
+            
+        folium.Marker(location=[row.lat, row.lon],
+                        popup=popup,
+                        icon=folium.Icon(color=color),
+                        tooltip=tooltip
+                        ).add_to(fg)
+    return fg
 
 def load_germany(l_levels:list, is_logging:bool=False) -> dict:
     d_ger = dict()
