@@ -41,18 +41,34 @@ layers_mapbox = [folium.TileLayer(tiles=f'{x}?access_token={mapbox_token}',
 
 
 l_tilelayer = layer_openstreet
-
+new_filed = ' Test '
 
 l_d_dropdown_map = ['Country', 'State', 'Region', 'District', 'Locality']
 l_d_dropdown_country = 'Deutschland'
+
+d_map_gadm_name = {
+    'D1' : 'Country', 
+    'D2' : 'State', 
+    'D3' : 'Region', 
+    'D4' : 'District', 
+    'ZIP': 'Locality'
+}
 # l_d_dropdown_world =   ['DEU', 'ESP', 'ITA', 'CHE', 'USA']
 
+# csv = {
+#     l_d_dropdown_map[0]: f'./assets/Geo/Germany/D0_{l_d_dropdown_country}_{l_d_dropdown_map[0]}.csv',
+#     l_d_dropdown_map[1]: f'./assets/Geo/Germany/D1_{l_d_dropdown_country}_{l_d_dropdown_map[1]}.csv',
+#     l_d_dropdown_map[2]: f'./assets/Geo/Germany/D2_{l_d_dropdown_country}_{l_d_dropdown_map[2]}.csv',
+#     l_d_dropdown_map[3]: f'./assets/Geo/Germany/D3_{l_d_dropdown_country}_{l_d_dropdown_map[3]}.csv',
+#     l_d_dropdown_map[4]: f'./assets/Geo/Germany/D4_{l_d_dropdown_country}_{l_d_dropdown_map[4]}.csv'
+# }
+
 csv = {
-    l_d_dropdown_map[0]: f'./assets/Geo/Germany/D0_{l_d_dropdown_country}_{l_d_dropdown_map[0]}.csv',
-    l_d_dropdown_map[1]: f'./assets/Geo/Germany/D1_{l_d_dropdown_country}_{l_d_dropdown_map[1]}.csv',
-    l_d_dropdown_map[2]: f'./assets/Geo/Germany/D2_{l_d_dropdown_country}_{l_d_dropdown_map[2]}.csv',
-    l_d_dropdown_map[3]: f'./assets/Geo/Germany/D3_{l_d_dropdown_country}_{l_d_dropdown_map[3]}.csv',
-    l_d_dropdown_map[4]: f'./assets/Geo/Germany/D4_{l_d_dropdown_country}_{l_d_dropdown_map[4]}.csv'
+    l_d_dropdown_map[0]: f'./assets/Geo/Germany/D1_{l_d_dropdown_country}_{l_d_dropdown_map[0]}_clean.csv',
+    l_d_dropdown_map[1]: f'./assets/Geo/Germany/D2_{l_d_dropdown_country}_{l_d_dropdown_map[1]}_clean.csv',
+    l_d_dropdown_map[2]: f'./assets/Geo/Germany/D3_{l_d_dropdown_country}_{l_d_dropdown_map[2]}_clean.csv',
+    l_d_dropdown_map[3]: f'./assets/Geo/Germany/D4_{l_d_dropdown_country}_{l_d_dropdown_map[3]}_clean.csv',
+    l_d_dropdown_map[4]: f'./assets/Geo/Germany/ZIP_{l_d_dropdown_country}_{l_d_dropdown_map[4]}_clean.csv'
 }
 
 fields = {

@@ -15,8 +15,9 @@ import folium
 from folium.plugins import MarkerCluster
 
 sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
-from functionality_maps import Defs
-from functionality_maps import paths
+# from functionality_maps import Defs
+# from functionality_maps import paths
+from src.functionality_maps import Defs, paths
 
 highlight_function = lambda x: {'fillColor': 'red',
                                 'color': 'black',
@@ -722,6 +723,31 @@ def get_markers_polygon(gdf:gpd.GeoDataFrame, col_perc:str,
                         tooltip=tooltip
                         ).add_to(fg)
     return fg
+
+
+def load_germany(l_levels:list, is_logging:bool=False) -> dict:
+    d_ger = dict()
+    for level in l_levels:
+        if level == 'census':
+            d_ger['census'] = gpd.read_file('./JupNB/DE_Data/VG250_GEM_WGS84.shp')
+            if is_logging:
+                print(f'Census is loaded!')
+        else:
+            d_ger[level] = load_gdf_from_csv(path=paths.csv[paths.d_map_gadm_name[level]])
+            if is_logging:
+                print(f'Level [{level}-{paths.d_map_gadm_name[level]}] loaded!')
+    return d_ger
+
+
+d_ISO_characters = {'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}
+# def fix_ISO_characters():
+
+def fix_dict_ISO_characters(d:dict) -> dict:
+    for k,v in d.items():
+        d[k] = v.replace(d_ISO_characters, regex=True)
+    return d
+
+
 
 
     # gdf_geom[col_name] = gdf_geom.geometry.apply(

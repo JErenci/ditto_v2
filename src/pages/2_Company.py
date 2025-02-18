@@ -7,6 +7,8 @@ from dash import callback, html, dcc, Input, Output, dash_table, no_update
 import dash_bootstrap_components as dbc
 from geopy.geocoders import Nominatim
 
+from shapely import geometry
+
 # from functionality_maps import f_maps
 import sys
 # sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
@@ -129,7 +131,7 @@ comp_dropCoverage = dcc.Dropdown(
                 id='dropdown_coverage',
                 options=[1,5,10,20,30,50],
                 value=[30],
-                multi=True,
+                multi=False,
                 searchable=True,
                 persistence=False,
                 persistence_type='memory',  # session
@@ -188,7 +190,7 @@ Input(component_id='dropdown_country_filter3', component_property='value'),#DIST
 Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
 Input(component_id='dropdown_sales', component_property='value'),#Stores
 Input(component_id='dropdown_metadata', component_property='value'),#Metadata
-Input(component_id='dropdown_Coverage', component_property='value'),#Store coverage
+Input(component_id='dropdown_coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
 )
 def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, 
@@ -320,7 +322,8 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
 
         l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
         print(f'l_bundeslaender:{l_bundeslaender}')
-
+        
+        gdf_zensus_de = gpd.read_file('JupNB\DE_Data\VG250_GEM_WGS84.shp')
         print(f'gdf_zensus_de:{gdf_zensus_de.shape}')
         gdf_map = gdf_zensus_de[gdf_zensus_de['SN_L'].isin(l_bundeslaender)]
         print(f'After filtering States, gdf_map.shape:{gdf_map.shape}')
@@ -404,6 +407,222 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
                 l_fg.extend([fg_mc])
 
     if(l_coverage):
+        round_dec=2
+        print(f'l_coverage:{l_coverage} Km')
+        #### PARSING VARIABLES ###
+        radius_km = int(l_coverage)
+        
+        
+        gdf_zensus_de = gpd.read_file('JupNB\DE_Data\VG250_GEM_WGS84.shp')
+        print('Removing non-serializable columns...')
+        l_cols_non_serializable = ['WSK','BEGINN']
+        for col in l_cols_non_serializable:
+            if col in gdf_zensus_de.columns:
+                gdf_zensus_de = gdf_zensus_de.drop(col,axis=1)
+        # gpd_zensus_filt = gpd_zensus[gpd_zensus['SN_L'].isin(l_bundeslaender)]
+
+
+
+
+        pdf = pdf_stores[pdf_stores['store'].isin(l_stores)]
+        gpd_zensus = gdf_zensus_de
+        print(f'Stores total={pdf.shape[0]}')        
+        
+        if l_states:
+            pdf = pdf[pdf['GADM_1'].isin(l_states)]
+            print(f'l_states - Stores total={pdf.shape[0]}')  
+                
+            l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
+            print(f'  gdf_zensus_filt:{gpd_zensus.shape[0]}')
+            gpd_zensus = gpd_zensus[gpd_zensus['SN_L'].isin(l_bundeslaender)]      
+        if l_regions:
+            pdf = pdf[pdf['GADM_2'].isin(l_regions)]
+            print(f'l_regions - Stores total={pdf.shape[0]}')        
+
+        if l_districts:
+            pdf = pdf[pdf['GADM_3'].isin(l_districts)]
+            print(f'l_districts - Stores total={pdf_stores_filt.shape[0]}')
+
+        
+        gdf_geom_6993 = gpd_zensus.to_crs(epsg=6933)
+        gdf_geom_6993['KFL_GPD'] = round(gdf_geom_6993.geometry.area / 10**6, 2)
+        gdf_geom_4326 = gpd_zensus.to_crs(epsg=4326)
+        gdf_geom_6993['lat'] = gdf_geom_4326.geometry.centroid.y
+        gdf_geom_6993['lon'] = gdf_geom_4326.geometry.centroid.x     
+        print(f'gdf_geom_6993={gdf_geom_6993.shape[0]}')
+
+        pdf_stores_filt= pdf
+        print(f'After all filters - Stores total={pdf_stores_filt.shape[0]}')        
+        l_center_points = list(zip(pdf_stores_filt['lat'], 
+                                   pdf_stores_filt['lon']))
+        print(l_center_points)
+        # l_fg = []
+        num_inside_towns, num_partly_towns = 0, 0
+        sum_ewz,sum_kfl, sum_area_geom_int = 0, 0, 0
+        sum_int_kfl, sum_int_ewz, sum_int_geom = 0, 0, 0
+
+        l_gdf_circles = []
+        l_gdf_merged_circles = []
+        fg_point = folium.FeatureGroup(
+            name=f'Center points [{len(l_center_points)}]')
+        fg_circle = folium.FeatureGroup(name=f'Circles [r={radius_km} Km, \
+                                        Area={round(3.1415 * radius_km**2, 2)} Km2]')
+        fg_int = folium.FeatureGroup(name=f'Intersections')
+        fg_inside = folium.FeatureGroup(name=f'Markers - Inside towns')
+        fg_partly = folium.FeatureGroup(name=f'Markers - Partly towns')
+        fg_outside = folium.FeatureGroup(name=f'Markers - Outside towns')
+        fg_overlay = folium.FeatureGroup(name=f'Overlay - Summary inside')
+
+        for i,center_point in enumerate(l_center_points):
+            print(f'Processing [{i+1}/{len(l_center_points)}] {center_point}')
+
+            geom_center_point = geometry.Point(center_point[1], center_point[0])
+            # gdf_point = gpd.GeoDataFrame(geometry=[geom_center_point], crs=f'EPSG:4326')
+            gjson_point = folium.Marker(location=[geom_center_point.y, geom_center_point.x], 
+                                        icon=folium.Icon(color="red"),
+                                        tooltip=folium.features.GeoJsonTooltip(fields=['geometry'], values=['coordinates'])
+                                        )
+
+            gjson_point.add_to(fg_point)
+            print(f'Processing [{i+1}/{len(l_center_points)}] {geom_center_point}')
+
+            ############# CIRCLE PROJECTION IN 4326 ####################
+            lon = center_point[1]
+            lat = center_point[0]
+            # Convert the Shapely circle to a geoDataFrame
+            poly_circle = f_maps.circle_around_lat_lon_point(
+                lon=lon, lat=lat, radius=1000 * radius_km)
+            gdf = gpd.GeoSeries([poly_circle])
+            gdf_overlay = gdf.to_frame(name='geometry').set_crs(epsg=4326)
+            gdf_circle_6933 = gdf_overlay.to_crs(epsg=6933)
+            l_gdf_circles.append(gdf_circle_6933.iloc[0].geometry)
+
+            # Generate the FeatureGroup and add it to the list
+            # fg_circle = folium.FeatureGroup(name=f'Circle [lat={lat}, lon ={lon}, r={radius_km} Km]')
+            gjson_circle = folium.GeoJson(gdf_overlay, color='red')
+            gjson_circle.add_to(fg_circle)
+            # l_fg_circle.append(fg_circle)
+
+            ############# INTERSECTION ####################
+            gdf_de_int = gpd.sjoin(gdf_geom_4326, gdf_overlay, 
+                                how="inner", predicate="intersects") #\
+                                    # .drop(l_cols_non_serializable, axis=1)
+                                    # 
+
+            gdf_de_int['KFL_GPD'] = round(gdf_geom_6993.geometry.area / 10**6, 2)
+            int_kfl = gdf_de_int.KFL.sum()
+            int_ewz =gdf_de_int.EWZ.sum()
+            int_geom = round(gdf_de_int.KFL_GPD.sum(), 2)
+            sum_int_kfl += int_kfl
+            sum_int_ewz += int_ewz
+            sum_int_geom += int_geom
+
+            print(f'int_kfl={int_kfl}Km2, int_geom={int_geom}Km2, int_ewz={int_ewz}')
+
+            gjson = f_maps.get_folium_geojson(gdf_de_int, 
+                                            fields=['GEN', 'EWZ', 'KFL', 'KFL_GPD'],
+                                                aliases = ['Name', 'Population', 'Area_KFL', 'Area_Geom'])
+            gjson.add_to(fg_int)
+
+            ############# OVERLAY / individual ####################
+
+            col_perc = 'PERC_int'
+
+            # Set the column used for NORMALIZATION (denominator)
+            gdf_geom_6993['area_geom'] = round(gdf_geom_6993['geometry'].area / 10**6, 2)
+            # Overlay geometry with polygon  
+            gdf_overlay = gpd.overlay(gdf_geom_6993, gdf_circle_6933, how='intersection')
+
+            # Set the column used for NORMALIZATION (numerator)
+            gdf_overlay['area'] = round(gdf_overlay['geometry'].area / 10**6, 2)
+            gdf_overlay[col_perc] = gdf_overlay['area'] / gdf_overlay['area_geom']
+            
+            
+            d_columns = {
+                'area_geom':{'alias' : 'area',        'is_norm': True,  'is_int':False},
+                'KFL':     {'alias' : 'area_data',    'is_norm': True,  'is_int':False},
+                'EWZ':     {'alias' : 'Population',   'is_norm': True,  'is_int':True}
+            }
+            
+            gdf_overlay = f_maps.overlay_shapes(gdf_circle=gdf_overlay, 
+                                                col_perc=col_perc, 
+                                                d_columns=d_columns)
+
+
+            # ################### Distance to point of interest ##########
+            gdf = pd.DataFrame(gdf_overlay[['ARS','lat','lon','PERC_int','GEN']])
+            gdf = gpd.GeoDataFrame(gdf, crs='epsg:4326', 
+                                geometry=[geometry.Point(xy) for xy in zip(gdf['lon'], gdf['lat'])])
+            gdf = f_maps.compute_dist_to_lat_lon(gdf, lon=geom_center_point.x, lat=geom_center_point.y, round_dec=2, units='km')
+
+            #######################  Gemeinde Markers  ##########################
+            
+            gdf_inside = gdf[gdf[col_perc] == 1.0]
+            num_inside_towns += gdf_inside.shape[0]
+            print(f'Inside ={ gdf_inside.shape[0]}')
+            fg_inside_circle = f_maps.get_markers_polygon(gdf_inside, col_perc=col_perc,
+                                                    l_tooltip=['GEN','dist'], 
+                                                    name=f'Markers inside {gdf_inside.shape[0]}', color='darkgreen')
+            fg_inside_circle.add_to(fg_inside)
+
+            gdf_partly = gdf[gdf[col_perc] != 1.0]
+            num_partly_towns += gdf_partly.shape[0]
+            fg_partly_circle = f_maps.get_markers_polygon(gdf_partly, col_perc=col_perc,
+                                                    l_tooltip=['GEN','dist'], 
+                                                    name=f'Markers partly {gdf_partly.shape[0]}', color='orange')
+            fg_partly_circle.add_to(fg_partly)
+
+
+            # gdf_outside = gdf[gdf[col_perc] != 1.0]
+            
+            ############# OVERLAY / merged ####################
+
+            l_cols_percentaged = ['area_geom', 'EWZ', 'KFL']
+            gdf_merge = f_maps.merge_shapes(gdf_overlay, l_col_percs=l_cols_percentaged,
+                                            d_percs={'data':'KFL', 'geom':'area_geom'}, 
+                                            num_dec=round_dec, is_logging=True)
+
+            gdf_merge['num_in'] = gdf_inside.shape[0]
+            gdf_merge['num_part'] = gdf_partly.shape[0]
+
+            l_gdf_merged_circles.append(gdf_merge)
+            
+            gjson = f_maps.get_folium_geojson(
+                gdf_merge, 
+                fields=[
+                    'perc_data', 
+                    'KFL_int', 'KFL',
+                    'perc_geom',
+                    'area_geom_int', 'area_geom',
+                    'EWZ_int', 'EWZ',
+                    'num_in', 'num_part', 
+                    ],
+                aliases = [
+                    'Percentage data', 
+                    'Area_data intersection [Km2]', 'Area_data shape [Km2]',
+                    'Percentage geometry',
+                    'Area_geom intersection [Km2]', 'Area_geom shape [Km2]',
+                    'Population intersection', 'Population shape',
+                    '# Localities inside', 
+                    '# Localities partially inside',
+                    ])
+            gjson.add_to(fg_overlay)
+            sum_ewz += gdf_merge['EWZ_int'].sum()
+            sum_kfl += gdf_merge['KFL_int'].sum()
+            sum_area_geom_int += gdf_merge['area_geom_int'].sum()
+            print(f'area_geom_int= {sum_area_geom_int}\n')
+
+
+        l_fg_candidates = [fg_point, fg_circle, fg_int, 
+              fg_overlay, #fg_overlay_all, 
+                fg_inside,fg_partly,
+                fg_outside
+                ]
+        for fg in l_fg_candidates:
+            if (fg is not None):
+                l_fg.append(fg)
+
+        
 
 
     print(f'Feature Groups!')

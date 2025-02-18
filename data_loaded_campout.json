@@ -1,0 +1,15 @@
+{
+  "name": "Campout",
+  "icon": "assets/Campout/1_Home/logo.jpg",
+  "web": "https://www.campout.at/",
+  "address": "Fleischmarkt 20/01\n 1010 Wien, Austria",
+  "locations":
+  {
+    "Home": {"lat": 48.210512, "lon": 16.377712, "address": "Fleischmarkt 20/01\n 1010 Wien, Austria"},
+    "Lager": {"lat": 48.14050245455654, "lon": 16.338058961138433, "address": "Lamezanstraße 3\n 1230 Wien, Austria"}
+  },
+  "customers":
+  {
+    "0": {"firstname": "Anna", "lastname": "Smith", "path_image_user": "assets/anna_smith.png"}
+  }
+}
