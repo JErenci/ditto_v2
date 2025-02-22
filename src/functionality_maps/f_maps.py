@@ -652,7 +652,23 @@ def circle_latlon(lon, lat, radius) :
 
     return circle_poly
 
-def get_gdf_circle(df:pd.DataFrame, radius_km:int, name:str, color:str='blue') -> gpd.GeoDataFrame:
+
+def circle_around_lat_lon_point(lon, lat, radius) : 
+    # lon, lat = 0, 42  # Example coordinates for San Francisco
+    # radius = 30000  # Radius in meters
+
+    local_azimuthal_projection = "+proj=aeqd +R=6371000 +units=m +lat_0={} +lon_0={}".format(lat, lon)
+    wgs84_to_aeqd = partial(pyproj.transform, pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"), pyproj.Proj(local_azimuthal_projection))
+    aeqd_to_wgs84 = partial(pyproj.transform, pyproj.Proj(local_azimuthal_projection), pyproj.Proj("+proj=longlat +datum=WGS84 +no_defs"))
+
+    transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857")
+    
+    center = Point(float(lon), float(lat))
+    point_transformed = transform(wgs84_to_aeqd, center)
+    # print(f'x{point_transformed.x}, y={point_transformed.y}')
+
+
+def get_gdf_circle(df:pd.DataFrame, radius_km:int, color:str='blue') -> gpd.GeoDataFrame:
     geometry = df.apply(lambda x: circle_latlon(x['lon'], x['lat'], radius = 1000 * radius_km), axis=1)
     df_out = gpd.GeoDataFrame(df, geometry=geometry ,crs="EPSG:4326")
     return df_out
@@ -721,8 +737,9 @@ def merge_shapes(gdf_circle: gpd.GeoDataFrame,
             print(f'{col} = {gdf_merged.iloc[0][col]}')
     return gdf_merged
 
-def get_markers_polygon(gdf:gpd.GeoDataFrame,
-                        l_tooltip:list,name:str='Markers',
+def get_markers_polygon(gdf:gpd.GeoDataFrame,l_tooltip:list,
+                        col_lat:str='lat', col_lon:str='lon',
+                        name:str='Markers',
                         color:str='blue') -> folium.FeatureGroup:
 
     fg = folium.FeatureGroup(name=name)
@@ -731,7 +748,7 @@ def get_markers_polygon(gdf:gpd.GeoDataFrame,
         tooltip = ','.join(l_msg)
         # tooltip = folium.Tooltip(f"Locality: {row['GEN']} <br> Distance[Km]: {row['dist']}")
         # popup = folium.Popup(f"lat: {row['lat']}\nLon: {row['lon']}")
-        folium.Marker(location=[row.lat, row.lon],
+        folium.Marker(location=[row[col_lat], row[col_lon]],
                         # popup=popup,
                         icon=folium.Icon(color=color),
                         tooltip=tooltip
