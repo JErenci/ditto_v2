@@ -560,14 +560,14 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
             gdf_inside = gdf[gdf[col_perc] == 1.0]
             num_inside_towns += gdf_inside.shape[0]
             print(f'Inside ={ gdf_inside.shape[0]}')
-            fg_inside_circle = f_maps.get_markers_polygon(gdf_inside, col_perc=col_perc,
+            fg_inside_circle = f_maps.get_markers_polygon(gdf_inside,
                                                     l_tooltip=['GEN','dist'], 
                                                     name=f'Markers inside {gdf_inside.shape[0]}', color='darkgreen')
             fg_inside_circle.add_to(fg_inside)
 
             gdf_partly = gdf[gdf[col_perc] != 1.0]
             num_partly_towns += gdf_partly.shape[0]
-            fg_partly_circle = f_maps.get_markers_polygon(gdf_partly, col_perc=col_perc,
+            fg_partly_circle = f_maps.get_markers_polygon(gdf_partly,
                                                     l_tooltip=['GEN','dist'], 
                                                     name=f'Markers partly {gdf_partly.shape[0]}', color='orange')
             fg_partly_circle.add_to(fg_partly)

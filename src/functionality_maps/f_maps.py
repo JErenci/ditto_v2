@@ -105,8 +105,9 @@ def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
 def get_folium_geojson(pdf: pd.DataFrame,
                         fields: list = None,
                         aliases: list = None,
-                        is_tooltip: bool = True,  # does NOT add weight to map
-                        is_highlighted: bool = True  # does NOT add weight to map
+                        is_tooltip: bool = True,        # does NOT add weight to map
+                        is_highlighted: bool = True,  # does NOT add weight to map
+                        is_styled: bool = False,
                         ) -> folium.GeoJson:
     # Avoid mutable elements
     if fields is None and aliases is None:
@@ -134,15 +135,24 @@ def get_folium_geojson(pdf: pd.DataFrame,
                                         'lineColor': 'red',
                                         'fillOpacity': 0.50,
                                         'weight': 0.1}
-
-    gj = folium.GeoJson(
-        data=pdf,
-        # nan_fill_opacity=0.1,
-        style_function=style_function,
-        # line_color='black',
-        highlight_function=highlight_function,
-        tooltip=tooltip
-    )
+    if is_styled:
+        gj = folium.GeoJson(
+            data=pdf,
+            # nan_fill_opacity=0.1,
+            style_function=style_function,
+            # line_color='black',
+            highlight_function=highlight_function,
+            tooltip=tooltip
+        )
+    else:
+        gj = folium.GeoJson(
+            data=pdf,
+            # nan_fill_opacity=0.1,
+            # style_function=style_function,
+            # line_color='black',
+            highlight_function=highlight_function,
+            tooltip=tooltip
+        )
     return gj
 
 def get_folium_featuregroup(pdf: pd.DataFrame,
@@ -785,17 +795,39 @@ def get_fg_markers(df:pd.DataFrame,
                         ).add_to(fg)
     return fg
 
-def load_germany(l_levels:list, is_logging:bool=False) -> dict:
+
+def normalize_df(df:pd.DataFrame, is_logging:bool=True) -> pd.DataFrame:
+    l_norm_cols = df.select_dtypes(include=['datetime64']).columns.tolist()
+    if l_norm_cols:
+        if is_logging:
+            print(f' Normalizing non-serializable columns... {l_norm_cols}')
+        df = df.drop(columns=l_norm_cols,axis=1)
+        if(is_logging):
+            print(f' Columns {l_norm_cols} removed')
+    else:
+        if is_logging:
+            print(f' No columns to normalize')
+    return df
+
+
+def load_germany(l_levels:list, is_df_normalized:bool=True, 
+                 is_logging:bool=False) -> dict:
     d_ger = dict()
     for level in l_levels:
         if level == 'census':
             d_ger['census'] = gpd.read_file('./JupNB/DE_Data/VG250_GEM_WGS84.shp')
             if is_logging:
                 print(f'Census is loaded!')
+            if is_df_normalized:
+                d_ger['census'] = normalize_df(df=d_ger['census'], is_logging=is_logging)
+                
         else:
             d_ger[level] = load_gdf_from_csv(path=paths.csv[paths.d_map_gadm_name[level]])
             if is_logging:
                 print(f'Level [{level}-{paths.d_map_gadm_name[level]}] loaded!')
+                if is_df_normalized:
+                    d_ger[level] = normalize_df(df=d_ger[level], is_logging=is_logging)
+
     return d_ger
 
 
