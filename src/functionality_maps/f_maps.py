@@ -108,6 +108,7 @@ def get_folium_geojson(pdf: pd.DataFrame,
                         is_tooltip: bool = True,        # does NOT add weight to map
                         is_highlighted: bool = True,  # does NOT add weight to map
                         is_styled: bool = False,
+                        fill_color:str = 'blue'
                         ) -> folium.GeoJson:
     # Avoid mutable elements
     if fields is None and aliases is None:
@@ -115,7 +116,7 @@ def get_folium_geojson(pdf: pd.DataFrame,
         aliases = ['Country Code:', 'Country Name:']
 
     # Add hover functionality_maps.
-    style_function = lambda x: {'fillColor': 'blue',
+    style_function = lambda x: {'fillColor': fill_color,
                                 'color': 'black',
                                 'line_color': 'red',
                                 'fillOpacity': 0.3,
