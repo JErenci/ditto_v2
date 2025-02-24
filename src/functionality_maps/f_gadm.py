@@ -2,12 +2,18 @@
 import sys
 
 sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
-from functionality_maps import paths
+# from functionality_maps.paths import d_stores_logo
 
 # import f_maps
 import os, requests
 import folium, folium.plugins
 import pandas as pd
+
+d_stores_logo = {
+    'sportscheck' : 'assets/SportScheck/1_Home/logo.png',
+    'decathlon'   : 'assets/Decathlon/1_Home/Decathlon_Logo.jpg',
+    'intersport'  : 'assets/Intersport/1_Home/logo.jpg'
+}
 
 def download_gpkg_country(country_ISO_3):
     url=f'https://geodata.ucdavis.edu/gadm/gadm4.1/gpkg/gadm41_{country_ISO_3}.gpkg'
@@ -135,24 +141,26 @@ def gen_map_gadm(
 from shapely.geometry import Polygon
 from pyproj import Proj, transform
 
-def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
+def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_logging:bool=False) -> list:
     l_fg = []
     for i,store in enumerate(l_stores):
         pdf_store = pdf[pdf['store'] == store]
         pdf_store = pdf_store.dropna(subset=['lat', 'lon'])
-        print(f'[{i+1}/{len(l_stores)}] Store={store}')
-        print(f'{pdf_store.shape}')
-        print(pdf_store[['name','lon','lat']])
+        if is_logging:
+            print(f'[{i+1}/{len(l_stores)}] Store={store}')
+            print(f'{pdf_store.shape}')
+            print(pdf_store[['name','lon','lat']])
 
 
         fg = folium.FeatureGroup(name=f'{store}[{len(pdf_store)}]')
-        print(f'logo path= {paths.d_stores_logo[store]}')
+        if is_logging:
+            print(f'logo path= {d_stores_logo[store]}')
         # Add markers to the map for each point in the DataFrame
         for idx, row in pdf_store.iterrows():
             folium.Marker(
                 location=[row['lat'], row['lon']],
                 popup=f'<a href={row['url']}>{row['url']}</a>',
-                icon=folium.features.CustomIcon(icon_image=paths.d_stores_logo[store],
+                icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
                                                                 icon_size=(50, 15)
                                                                 ),
                 tooltip=row['name']
@@ -162,9 +170,10 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
             # print(f'loca={loca}')
 
             location_bbox = loca['raw']['boundingbox']
-            print(f'location_bbox={location_bbox}')
             points_rect = [[location_bbox[0],location_bbox[2]],[location_bbox[1],location_bbox[3]]]
-            print(f'points_rect={points_rect}')
+            if is_logging:
+                print(f'location_bbox={location_bbox}')
+                print(f'points_rect={points_rect}')
 
             points_area = [
                     (location_bbox[0], location_bbox[2]),  # (min_lat, min_lon)
@@ -172,7 +181,8 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
                     (location_bbox[1], location_bbox[3]),  # (max_lat, max_lon)
                     (location_bbox[0], location_bbox[3])   # (min_lat, max_lon)
                 ]
-            print(f'points_area={points_area}')
+            if is_logging:
+                print(f'points_area={points_area}')
             polygon = Polygon(points_area)
 
             # Define the projection (WGS84 to UTM)
@@ -185,8 +195,8 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list) -> list:
 
             # Compute the area in square meters
             area_sq_meters = projected_polygon.area
-
-            print(f'area_sq_meters={area_sq_meters}')
+            if is_logging:
+                print(f'area_sq_meters={area_sq_meters}')
             
             folium.Rectangle(bounds=points_rect, color='#ff7800', fill=True, 
                         fill_color='#ffff00', fill_opacity=0.2, 

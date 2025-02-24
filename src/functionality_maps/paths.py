@@ -9,8 +9,8 @@ stores = 'pdf_all_stores.json'
 
 d_stores_logo = {
     'sportscheck' : 'assets/SportScheck/1_Home/logo.png',
-    'decathlon' : 'assets/Decathlon/1_Home/Decathlon_Logo.jpg',
-    'intersport' : 'assets/Intersport/1_Home/logo.jpg'
+    'decathlon'   : 'assets/Decathlon/1_Home/Decathlon_Logo.jpg',
+    'intersport'  : 'assets/Intersport/1_Home/logo.jpg'
 }
 
 fields_wca=['ADMIN',	'ISO_A3',	'Area_total_km2']

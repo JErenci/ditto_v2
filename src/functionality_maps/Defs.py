@@ -152,6 +152,12 @@ dict_tuple_colors_norm = {
     0 : divide_tuple(color_red,255),
 }
 
+d_stores_logo = {
+    'sportscheck' : 'assets/SportScheck/1_Home/logo.png',
+    'decathlon'   : 'assets/Decathlon/1_Home/Decathlon_Logo.jpg',
+    'intersport'  : 'assets/Intersport/1_Home/logo.jpg'
+}
+
 # company = {
 #     'name': 'Baumgartner',
 #     # 'map' : 'company',
