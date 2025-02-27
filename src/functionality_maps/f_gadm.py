@@ -139,9 +139,9 @@ def gen_map_gadm(
     return fm
 
 from shapely.geometry import Polygon
-from pyproj import Proj, transform
+from pyproj import Proj, Transformer
 
-def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_logging:bool=False) -> list:
+def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_shown:bool=False, is_logging:bool=False) -> list:
     l_fg = []
     for i,store in enumerate(l_stores):
         pdf_store = pdf[pdf['store'] == store]
@@ -152,7 +152,7 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_logging:bool=False) -> list
             print(pdf_store[['name','lon','lat']])
 
 
-        fg = folium.FeatureGroup(name=f'{store}[{len(pdf_store)}]')
+        fg = folium.FeatureGroup(name=f'{store}[{len(pdf_store)}]', show=is_shown)
         if is_logging:
             print(f'logo path= {d_stores_logo[store]}')
         # Add markers to the map for each point in the DataFrame
@@ -186,11 +186,10 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_logging:bool=False) -> list
             polygon = Polygon(points_area)
 
             # Define the projection (WGS84 to UTM)
-            proj_wgs84 = Proj(init='epsg:4326')
-            proj_utm = Proj(proj='utm', zone=33, ellps='WGS84')  # Adjust the UTM zone as needed
-
+            transformer = Transformer.from_crs("EPSG:4326", "EPSG:32633")
+            
             # Project the polygon to UTM
-            projected_points = [transform(proj_wgs84, proj_utm, lon, lat) for lat, lon in points_area]
+            projected_points = [transformer.transform(lon, lat) for lat, lon in points_area]
             projected_polygon = Polygon(projected_points)
 
             # Compute the area in square meters
