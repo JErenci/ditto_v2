@@ -25,6 +25,55 @@ highlight_function = lambda x: {'fillColor': 'red',
                                 'fillOpacity': 0.50,
                                 'weight': 0.1}
 
+def get_fg_gjson(gdf:gpd.GeoDataFrame, fg_name:str, fields:list, aliases:list, 
+                 is_styled: bool = False, fill_color:str='blue', is_shown:bool=False) -> folium.FeatureGroup:
+    fg_circ_store = folium.FeatureGroup(name=fg_name, show=is_shown)
+    get_folium_geojson(gdf, 
+                        fields= fields,
+                        aliases = aliases,
+                        fill_color = fill_color,
+                        is_styled= is_styled
+                        ).add_to(fg_circ_store)
+    return fg_circ_store
+
+### LOAD gdf_census_merged (per Bundesland) ###
+def merge_census_geom(gdf:gpd.GeoDataFrame, 
+                      col_groupby:str = 'SN_L', col_geom:str='geometry',
+                      round_dec:int=3,
+                      is_logging:bool=False) -> gpd.GeoDataFrame:
+    # d_ger = f_maps.load_germany(l_levels=['census'])
+    # gdf_census_merged = merge_census_geom(d_ger['census'], is_logging=is_logging)
+    # gdf_census_merged.to_file(path_census_D2)
+    
+    if is_logging:
+        print(f'Grouping geometries...')
+    gdf = gdf.groupby('SN_L').agg( \
+        {'EWZ':'sum', 
+        'KFL' : 'sum',
+        'geometry': lambda x: x.geometry.union_all(),
+        })
+    if is_logging:
+        print(f' Adding areas and renaming columns...')
+
+    gdf = gdf.reset_index(names=['Bundesland'])
+    gdf = gpd.GeoDataFrame(gdf).set_crs(4326)
+    gdf['Bundesland'] = gdf['Bundesland'].map(Defs.dict_id_bundeslaender)
+    gdf['area_geom'] = gdf.to_crs(6933).geometry.area/ 10**6
+    gdf['area_geom'] = gdf['area_geom'].round(round_dec)
+    gdf = gdf.rename(columns={'KFL':'area_dbms'})
+    return gdf
+
+def enrich_census(gdf_census_region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    gdf_census_6993 = gdf_census_region.to_crs(epsg=6933)
+    gdf_census_6993['area_geom'] = round(gdf_census_6993['geometry'].area / 10**6, 2)
+    gdf_census_6993['centroid']=gdf_census_6993.to_crs('+proj=cea').centroid.to_crs(gdf_census_6993.crs)
+    gdf_census_6993['centroid']= gdf_census_6993['centroid'].to_crs(epsg=4326)
+    gdf_census_6993['lat']=gdf_census_6993['centroid'].y
+    gdf_census_6993['lon']=gdf_census_6993['centroid'].x
+    gdf_census_6993 = gdf_census_6993.drop(['centroid'], axis=1)
+
+    return gdf_census_6993
+
 def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
     print()
     print('get_folium_map_countries()')
@@ -222,7 +271,6 @@ def get_folium_featuregroup(pdf: pd.DataFrame,
 
     return fg
 
-
 def load_gdf_from_csv(path: str, crs: str = None) -> gpd.GeoDataFrame:
     # Avoid default arg warning
     if crs is None:
@@ -234,7 +282,6 @@ def load_gdf_from_csv(path: str, crs: str = None) -> gpd.GeoDataFrame:
     # print(f'gs.shape={gs.shape()}')
     pdf_countries = gpd.GeoDataFrame(pdf_countries, geometry=gs, crs=crs)
     return pdf_countries
-
 
 def get_fg_from_locations(coords: pd.DataFrame) -> folium.FeatureGroup:
     print('Adding markers to a feature group')
@@ -250,14 +297,12 @@ def get_fg_from_locations(coords: pd.DataFrame) -> folium.FeatureGroup:
 
     return fg_markers
 
-
 def read_dict_temp(path: str):
     f = open(path)
     data = json.load(f)
     # Closing file
     f.close()
     return data
-
 
 def get_image(path: str):
     image_encoded = base64.b64encode(open(path, 'rb').read())
@@ -266,7 +311,6 @@ def get_image(path: str):
                      width='800', height='600'
                      )
     return image
-
 
 def try_read_dict_temp():
     try:
@@ -281,7 +325,6 @@ def try_read_dict_temp():
         print(ex)
     return [company, d_company]
 
-
 def write_dict_temp(d: dict, path: str):
     with open(f'{path}.json', 'w') as json_file:
         json.dump(d, json_file)
@@ -291,13 +334,11 @@ def write_dict_temp(d: dict, path: str):
     # f.close()
     print("Dictionary has been written!")
 
-
 def write_map_temp(fm: folium.Map(), name_map: str):
     f = open(f"{name_map}.txt", "w")
     f.write(fm._repr_html_())
     f.close()
     print("Map has been written!")
-
 
 def get_feature_group(pdf: pd.DataFrame, category: str) -> folium.FeatureGroup:
     if not pdf.empty:
