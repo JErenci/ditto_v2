@@ -728,7 +728,8 @@ def get_gdf_circle(df:pd.DataFrame, radius_km:int, color:str='blue') -> gpd.GeoD
 from geopy.distance import geodesic
 
 
-def compute_dist_to_lat_lon(gdf,lon,lat,col_out:str='dist',units:str='km',round_dec:int=2):
+def compute_dist_to_lat_lon(gdf,lon,lat,
+                            col_out:str='dist',units:str='km',round_dec:int=2):
     point_of_interest = (lat,lon)
     if units == 'km':
         gdf[col_out] = gdf.geometry.apply(
