@@ -70,7 +70,7 @@ def enrich_census(gdf_census_region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     gdf_census_6993['centroid']= gdf_census_6993['centroid'].to_crs(epsg=4326)
     gdf_census_6993['lat']=gdf_census_6993['centroid'].y
     gdf_census_6993['lon']=gdf_census_6993['centroid'].x
-    gdf_census_6993 = gdf_census_6993.drop(['centroid'], axis=1)
+    gdf_census_6993 = gdf_census_6993.drop(['centroid','BEGINN','WSK'], axis=1)
 
     return gdf_census_6993
 
@@ -92,19 +92,8 @@ def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
     if d_company:
         print('Getting Icons')
         print(f'{d_company["icon"]}')
-        icon_company = folium.features.CustomIcon(d_company['icon'],
-                                                  icon_size=(50, 50))
 
         pdf_marker_coords = pd.DataFrame.from_dict(d_company['locations'], orient='index')
-
-        # print('Single marker')
-        # feature_group2 = folium.FeatureGroup(name='Company2 with Single Marker')
-        #
-        # folium.Marker(location=[47.5618,9.7],
-        #                               popup='popup',
-        #                               icon=icon_company,
-        #                               tooltip='tooltip').add_to(feature_group2)
-        # fm.add_child(feature_group2)
 
         print('Adding markers to a feature group')
         fg_markers = folium.FeatureGroup(name=d_company['name'])
@@ -117,14 +106,6 @@ def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
                                                           icon_size=(50, 50))
                           ).add_to(fg_markers)
         fm.add_child(fg_markers)
-
-    ## DID NOT WORK ##
-    # pdf_marker_coords.apply(lambda row: folium.Marker(location=[row['lat'], row['lon']],
-    #                                                   # tooltip=row['address'],
-    #                                                   icon=icon,
-    #                                                   # popup='Baumgartner'
-    #                                                   ).add_to(fg_markers),
-    #                         axis=1)
 
     print('Adding fullscreen')
     fullscreen = folium.plugins.Fullscreen(position='topleft',
@@ -890,3 +871,95 @@ def fix_dict_ISO_characters(d:dict) -> dict:
     # if is_logging:
     #     print(f'overlay_shapes: {gdf_geom[col_name].value_counts()}')
     # return gdf_geom
+
+import matplotlib.colors as mcolors
+
+# Define a function to create RGBA tuples
+def rgba_from_value(gdf, color, column, alpha_factor):
+    return gdf.apply(lambda row: mcolors.to_rgba(color, alpha=row[column] * alpha_factor), axis=1)
+
+import geopandas as gpd
+import numpy as np
+import pandas as pd
+
+def compute_quantile_ranges(gdf:gpd.GeoDataFrame, col_quant: str, l_quantiles:list,
+                            round_dec:int=2) -> list:
+    
+    quant_max = gdf[col_quant].max()
+    # Define custom quantile boundaries
+
+    l_quant_ranges = [round(x*quant_max, round_dec) for x in l_quantiles]
+    # l_quant_ranges.append(round(quant_max, round_dec))
+    return l_quant_ranges
+
+def add_quantiles_column(gdf:gpd.GeoDataFrame, col_quant: str, l_quantiles:list,
+                      col_out:str='quantile', round_dec:int=2, is_logging:bool=False) -> gpd.GeoDataFrame :
+    if is_logging:
+        print('ADDING QUANTILES COLUMN')
+        print(f'  gdf.shape:{gdf.shape[0]}')
+
+    # Norm to max value
+    gdf[f'{col_quant}_norm'] = gdf[col_quant] / gdf[col_quant].max()
+    gdf[col_quant] = gdf[col_quant].fillna(0)
+    gdf[f'{col_quant}_norm'] = gdf[f'{col_quant}_norm'].fillna(0)
+    if is_logging:
+        print(f'# Norm to max value')
+        print(f'  Max {col_quant}={gdf[col_quant].max()}')
+
+    # Replace Inf values with NaN in 'column1'
+    gdf[f'{col_quant}_norm'] = gdf[f'{col_quant}_norm'].replace([np.inf, -np.inf], np.nan)
+    # Drop rows with NaN values in 'column1'
+    gdf = gdf.dropna(subset=[f'{col_quant}_norm'])
+    if is_logging:
+        print(f'# Replace Inf values with NaNs, and dropping rows with NaNs')
+        print(f'  gdf shape={gdf.shape[0]}')
+
+    # Apply the function to create RGBA tuples
+    gdf['color_rgba_detailed'] = rgba_from_value(gdf, 'blue', f'{col_quant}_norm', 1.0)
+    if is_logging:
+        print(f'# Apply the function to create RGBA tuples')
+    # # # Define custom quantile boundaries
+    # l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]
+    
+    # Use pd.qcut() to create uneven quantiles
+    gdf[col_out] = pd.qcut(gdf[f'{col_quant}_norm'], q=l_quantiles, labels=False, duplicates='drop')
+
+    alpha = 1.0 * (1/(len(l_quantiles)+1))        # Ensure alpha is between 0 and 1
+    if is_logging:
+        print('# Use pd.qcut() to create uneven quantiles (alpha MUST BE < 1)')
+        print(f'  gdf[col_out]={gdf[col_out]}')
+        print(f'  max={gdf[col_out].max()}')
+        print(f'  alpha={alpha}')
+
+    # Adding color based on quantile
+    if is_logging:
+        print('# Adding color based on quantile')
+    gdf['color_rgba_tuple'] = rgba_from_value(gdf, 'blue', col_out, alpha)
+    gdf['color'] = gdf[col_out].map(Defs.dict_tuple_colors)
+    gdf['color_norm'] = gdf[col_out].map(Defs.dict_tuple_colors_norm)
+
+    return gdf
+
+def get_fg_quant(gdf:gpd.GeoDataFrame, l_quantiles:str, l_quant_ranges:str, col_quant:str,
+                 col_out:str='quantile', is_logging:bool=False) -> list :
+    l_fg_metadata = []
+    for it,(q1,q2,bv1,bv2) in enumerate(zip(l_quantiles,l_quantiles[1:],l_quant_ranges, l_quant_ranges[1:])):
+        gdf_quantile = gdf[gdf[col_out] == it]
+        if is_logging:
+            print(f'Processing quantile [{it+1}/{len(l_quantiles)-1}]')
+            print(f'  Shape={gdf_quantile.shape[0]}')
+        fg_name = f'  [{len(gdf_quantile)}] {it+1}. Quantile  [{q1*100}%-{q2*100}%, EPK=({bv1}-{bv2})'
+
+        print(fg_name)
+        print(gdf_quantile.head(1))
+        print(gdf_quantile.dtypes)
+        if (gdf_quantile.empty is not True):
+            fg = get_folium_featuregroup_color(
+                pdf=gdf_quantile, 
+                fg_name=fg_name,
+                fields=['GEN','BEZ','EWZ','ARS', 'EWZ', 'KFL', 'EPK', f'{col_quant}_norm', col_out],
+                aliases=['Name','Type','Pop','ARS', 'EinwohnerZahl', 'Area [Km2]', 'Density', 'Normed density', 'Quantile'],
+                fill_color=Defs.dict_colors[it]
+            )
+            l_fg_metadata.append(fg)
+    return l_fg_metadata

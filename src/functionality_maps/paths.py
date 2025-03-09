@@ -5,7 +5,7 @@ import folium
 
 path_map_empty ='./assets/Geo/Map_empty.html'
 path_wca='./assets/Geo/world_country_area.csv'
-stores = 'pdf_all_stores.json'
+stores = './pdf_all_stores.json'
 
 d_stores_logo = {
     'sportscheck' : 'assets/SportScheck/1_Home/logo.png',
