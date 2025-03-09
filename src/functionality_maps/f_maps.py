@@ -544,6 +544,7 @@ def get_folium_featuregroup_color(pdf: pd.DataFrame,
                                     aliases: list = None,
                                     is_tooltip: bool = True,  # does NOT add weight to map
                                     is_highlighted: bool = True,  # does NOT add weight to map
+                                    is_shown: bool = False,
                                     fill_color:str = 'blue') -> folium.FeatureGroup:
     # Avoid mutable elements
     if fields is None:  # 
@@ -551,7 +552,7 @@ def get_folium_featuregroup_color(pdf: pd.DataFrame,
     if aliases is None:
         aliases = ['Country Code:', 'Country Name:']
 
-    fg = folium.FeatureGroup(name=fg_name)
+    fg = folium.FeatureGroup(name=fg_name, show=is_shown)
 
     # Add hover functionality_maps.
     style_function = lambda x: {'fillColor': fill_color,
@@ -941,7 +942,7 @@ def add_quantiles_column(gdf:gpd.GeoDataFrame, col_quant: str, l_quantiles:list,
     return gdf
 
 def get_fg_quant(gdf:gpd.GeoDataFrame, l_quantiles:str, l_quant_ranges:str, col_quant:str,
-                 col_out:str='quantile', is_logging:bool=False) -> list :
+                 col_out:str='quantile', is_shown:bool=False, is_logging:bool=False) -> list :
     l_fg_metadata = []
     for it,(q1,q2,bv1,bv2) in enumerate(zip(l_quantiles,l_quantiles[1:],l_quant_ranges, l_quant_ranges[1:])):
         gdf_quantile = gdf[gdf[col_out] == it]
@@ -956,6 +957,7 @@ def get_fg_quant(gdf:gpd.GeoDataFrame, l_quantiles:str, l_quant_ranges:str, col_
         if (gdf_quantile.empty is not True):
             fg = get_folium_featuregroup_color(
                 pdf=gdf_quantile, 
+                is_shown=is_shown,
                 fg_name=fg_name,
                 fields=['GEN','BEZ','EWZ','ARS', 'EWZ', 'KFL', 'EPK', f'{col_quant}_norm', col_out],
                 aliases=['Name','Type','Pop','ARS', 'EinwohnerZahl', 'Area [Km2]', 'Density', 'Normed density', 'Quantile'],
