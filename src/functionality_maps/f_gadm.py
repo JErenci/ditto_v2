@@ -141,7 +141,44 @@ def gen_map_gadm(
 from shapely.geometry import Polygon
 from pyproj import Proj, Transformer
 
-def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_shown:bool=False, is_logging:bool=False) -> list:
+
+def get_store_markers(pdf:pd.DataFrame, l_popup_rows:list,
+                      name:str, is_shown:bool=False) -> folium.FeatureGroup:
+    fg = folium.FeatureGroup(name=name, 
+                            show=is_shown)
+    # Add markers to the map for each point in the DataFrame
+    for idx, row in pdf.iterrows():
+        if l_popup_rows:
+            # Generate HTML content for the popup
+            html_content = ''
+            for item in l_popup_rows:
+                html_row = f'<b>{item}:</b>{row[item]}<br>'
+                html_content += html_row
+            popup = folium.Popup(html_content, max_width=250)
+            folium.Marker(
+                location=[row['lat'], row['lon']],
+                popup=popup,
+                icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
+                                                                icon_size=(50, 15)
+                                                                ),
+                tooltip=row['name']
+            ).add_to(fg)
+        else:
+            
+            folium.Marker(
+                location=[row['lat'], row['lon']],
+                popup=f'url=<a href={row['url']}>{row['url']}</a>',
+                icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
+                                                                icon_size=(50, 15)
+                                                                ),
+                tooltip=row['name']
+            ).add_to(fg)
+    return fg
+
+
+def get_fg_store(pdf:pd.DataFrame, l_stores:list, 
+                 l_popup_rows:list=[], 
+                 is_shown:bool=False, is_logging:bool=False) -> list:
     l_fg = []
     for i,store in enumerate(l_stores):
         pdf_store = pdf[pdf['store'] == store]
@@ -152,19 +189,39 @@ def get_fg_store(pdf:pd.DataFrame, l_stores:list, is_shown:bool=False, is_loggin
             print(pdf_store[['name','lon','lat']])
 
 
-        fg = folium.FeatureGroup(name=f'{store}[{len(pdf_store)}]', show=is_shown)
+        fg = folium.FeatureGroup(name=f'[{len(pdf_store)}] STORES/{store}', 
+                                 show=is_shown)
         if is_logging:
             print(f'logo path= {d_stores_logo[store]}')
+
         # Add markers to the map for each point in the DataFrame
         for idx, row in pdf_store.iterrows():
-            folium.Marker(
-                location=[row['lat'], row['lon']],
-                popup=f'<a href={row['url']}>{row['url']}</a>',
-                icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
-                                                                icon_size=(50, 15)
-                                                                ),
-                tooltip=row['name']
-            ).add_to(fg)
+            if l_popup_rows:
+                # Generate HTML content for the popup
+                html_content = ''
+                for item in l_popup_rows:
+                    html_row = f'<b>{item}:</b>{row[item]}<br>'
+                    html_content += html_row
+                popup = folium.Popup(html_content, max_width=250)
+                folium.Marker(
+                    location=[row['lat'], row['lon']],
+                    popup=popup,
+                    icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
+                                                                    icon_size=(50, 15)
+                                                                    ),
+                    tooltip=row['name']
+                ).add_to(fg)
+            else:
+                
+                folium.Marker(
+                    location=[row['lat'], row['lon']],
+                    popup=f'url=<a href={row['url']}>{row['url']}</a>',
+                    icon=folium.features.CustomIcon(icon_image=d_stores_logo[store],
+                                                                    icon_size=(50, 15)
+                                                                    ),
+                    tooltip=row['name']
+                ).add_to(fg)
+
 
             loca = row['location']
             # print(f'loca={loca}')
