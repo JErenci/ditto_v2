@@ -49,6 +49,10 @@ print('Loading stores...')
 pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
 print(f'pdf_stores.shape[0]={pdf_stores.shape[0]}')
 is_logging = True
+
+d_company = f_maps.read_dict_temp(file_used)
+print(f'd_company={d_company}')
+
 # pdf_stores['store_name'] = pdf_stores["store"] +"_" +  pdf_stores["name"]   ## ADD NAME OF STORE
 # print(f'STORES/TOTAL = {pdf_stores.shape[0]}')
 # pdf_stores = pdf_stores.dropna(subset=['lat','lon'])                        ### FILTER STORES WITH NO COORDS ###
@@ -147,6 +151,18 @@ comp_dropCoverage = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select Area of Influece around Store[Km]",
             )
+check_company = dcc.Checklist(
+    id='checklist_company',
+    options=[d_company['name']]
+        # {
+            # "label": [
+            #     html.Img(src=d_company['icon']),
+            #     html.Span(d_company['icon'], style={"font-size": 15, "padding-left": 10}),
+            # ],
+            # "value": d_company['name']#,inline=True# Defs.company['name'],
+        # }
+    # ]
+)
 
 comp_pdf_found = html.Div(id='pdf_world_found')
 comp_fig = html.Div(id='fig_bottom')
@@ -165,6 +181,7 @@ layout = dbc.Container(
 
     dbc.Row([
         dbc.Col([
+            check_company,      # Checkbox with company locations
             comp_text_Geo,      # Geo component separaton
             comp_dropCountry,   # COUNTRY
             comp_dropState,     # STATE
@@ -193,6 +210,7 @@ fluid=True,     # Stretch to use all screen
 # Output(component_id='pdf_world_found', component_property='children'),
 Output(component_id='map_figure_right', component_property='children'),
 # Output(component_id='fig_bottom', component_property='children'),
+Input(component_id='checklist_company', component_property='value'),#Company Locations
 Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
 Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
 Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
@@ -203,7 +221,7 @@ Input(component_id='dropdown_metadata', component_property='value'),#Metadata
 Input(component_id='dropdown_coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
 )
-def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips, 
+def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l_zips, 
                      l_stores, l_metadata, l_coverage):
     dropdown_value = paths.l_d_dropdown_map
     fig = None
@@ -228,8 +246,9 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
 
     # Initialize list of feature_groups
     l_fg = []
+    d_roi = {}
 
-    #COUNTRY
+    #VERBOSITY
     category = paths.l_d_dropdown_map[0]
     print(f'l_countries={l_countries}')
 
@@ -250,14 +269,38 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
     # print(pdf1.shape)
     # print(f'Countries found={pdf1.shape[0]}')
 
-    print(f'l_countries={l_countries}')
-    pred2 = pdf_world.isin(l_countries)
-    print(f'pred2={pred2}')
-    pdf = gdf_world[pred2]
-    print('pdf2')
-    print(pdf.head())
-    pdf_countriesNo = pdf.shape[0]
-    print(f'Countries found={pdf_countriesNo}')
+    #VERBOSITY
+    if is_logging:
+        print(f'l_countries={l_countries}')
+        pred2 = pdf_world.isin(l_countries)
+        print(f'pred2={pred2}')
+        pdf = gdf_world[pred2]
+        print('pdf2')
+        print(pdf.head())
+        pdf_countriesNo = pdf.shape[0]
+        print(f'Countries found={pdf_countriesNo}')
+    
+    #COMPANY
+    if c_company:
+        # print('Getting Icons')
+        # print(f'{d_company["icon"]}')
+
+        pdf_marker_coords = pd.DataFrame.from_dict(d_company['locations'], orient='index')
+
+        print('Adding markers to a feature group')
+        fg_company = folium.FeatureGroup(name=d_company['name'])
+
+        for index, row in pdf_marker_coords.iterrows():
+            folium.Marker(location=[row["lat"], row["lon"]],
+                          popup=row["address"],
+                          tooltip=index,
+                          icon=folium.features.CustomIcon(icon_image=d_company['icon'],
+                                                          icon_size=(50, 50))
+                          ).add_to(fg_company)
+        if fg_company is not None:
+            l_fg.append(fg_company)
+
+    #COUNTRIES
     if l_countries:
         fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
                                                         l_countries=l_countries,
@@ -267,7 +310,6 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
         if fg_countries is not None:
             l_fg.append(fg_countries)
     
-    d_roi = {}
     #STATES
     if l_states:
         category = paths.l_d_dropdown_map[1]
@@ -310,6 +352,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
         if fg_zip is not None:
             l_fg.append(fg_zip)
 
+    #STORES
     if (l_stores):
         print('Loading stores...')
         pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
@@ -332,6 +375,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
         if l_fg_stores is not None:
             l_fg.extend(l_fg_stores)
 
+    #POPULATION
     if (l_metadata):
 
         l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]   # Define custom quantile boundaries
@@ -364,6 +408,7 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
             # if fg_mc is not None:
             #     l_fg.extend([fg_mc])
 
+    #COVERAGE
     if(l_coverage):
         path_census_D2 = './assets/Geo/Germany/D1_Deutschland_census.json'
         gdf_census_merged = gpd.read_file(path_census_D2)
@@ -659,12 +704,13 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
         #         l_fg.append(fg)
 
 
+    fm = folium.Map()#f_maps.get_folium_map_countries(l_fg,d_company=f_maps.read_dict_temp(file_used))
     print(f'Feature Groups!')
     if l_fg: #list of feature groups is NOT empty
         print(f"l_fg:{l_fg}")
         print("Generating map!")
 
-        fm = f_maps.get_folium_map_countries(l_fg,d_company=f_maps.read_dict_temp(file_used))
+        fm = f_maps.get_folium_map_countries(l_fg)
 
 
         # 3.1. RoI (Region, Towns, Stores) 
@@ -677,15 +723,16 @@ def gen_map_countryX(l_countries, l_states, l_regions, l_districts, l_zips,
 
 
         print(f'fm:{fm}, type:{type(fm)}')
-        print('Writing map')
-        name_map = 'map_right'
-        f_maps.write_map_temp(fm, name_map=name_map)
-        map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),
-                           width='100%',
-                           height='750'
-                           )
+
+    print('Writing map')
+    name_map = 'map_right'
+    f_maps.write_map_temp(fm, name_map=name_map)
+    map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),
+                        width='100%',
+                        height='750'
+                        )
 
         # im = dash_table.DataTable(pdf_world.to_dict('records'), page_size=10)
-        return map_fig
-    else:
-        return html.Iframe("Empty map!")
+    return map_fig
+    # else:
+    #     return html.Iframe("Empty map!")
