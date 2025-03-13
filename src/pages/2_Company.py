@@ -1,13 +1,14 @@
+import datetime
 import dash
 import folium
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from dash import callback, html, dcc, Input, Output, dash_table, no_update
+from dash import callback, html, dcc, Input, Output, dash_table, no_update, State
 import dash_bootstrap_components as dbc
 from geopy.geocoders import Nominatim
 
-from shapely import geometry
+from shapely import geometry, wkt
 
 # from functionality_maps import f_maps
 import sys
@@ -45,13 +46,10 @@ pdf_d4 = pdf_d4.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, r
 print(f'pdf_d1.shape[0]={pdf_d1.shape[0]}')
 
 ### PDF_STORES ###
-print('Loading stores...')
 pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
-print(f'pdf_stores.shape[0]={pdf_stores.shape[0]}')
 is_logging = True
 
 d_company = f_maps.read_dict_temp(file_used)
-print(f'd_company={d_company}')
 
 # pdf_stores['store_name'] = pdf_stores["store"] +"_" +  pdf_stores["name"]   ## ADD NAME OF STORE
 # print(f'STORES/TOTAL = {pdf_stores.shape[0]}')
@@ -61,8 +59,8 @@ print(f'd_company={d_company}')
 # Load the saved GeoJSON file into a new GeoDataFrame
 gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
 
-
 company_name = 'D1tt0'
+log_messages = []
 
 comp_text_Geo = html.H3('Geo Data')
 comp_dropCountry = dcc.Dropdown(
@@ -154,23 +152,20 @@ comp_dropCoverage = dcc.Dropdown(
 check_company = dcc.Checklist(
     id='checklist_company',
     options=[d_company['name']]
-        # {
-            # "label": [
-            #     html.Img(src=d_company['icon']),
-            #     html.Span(d_company['icon'], style={"font-size": 15, "padding-left": 10}),
-            # ],
-            # "value": d_company['name']#,inline=True# Defs.company['name'],
-        # }
-    # ]
 )
+log_window = html.Div(
+    id="log_display", 
+    style=dict(height='300px',overflow='scroll', whiteSpace= 'pre-wrap')
+)
+log_interval = dcc.Interval(id='interval_component', interval=1000, n_intervals=0)
 
 comp_pdf_found = html.Div(id='pdf_world_found')
 comp_fig = html.Div(id='fig_bottom')
 comp_map = html.Div(id='map_figure_right')
 
-# layout = dbc.Container(
 layout = dbc.Container(
 [
+    log_interval,
     # dcc.Markdown('# This will be the content of Page Company'),
     html.Div(id='image_customer', children=''),
     dbc.Row(
@@ -195,6 +190,7 @@ layout = dbc.Container(
             comp_dropMetadata,   # Metadata,
             comp_text_coverage,  # Store Coverage text separator
             comp_dropCoverage,   # Store Coverage [Km]
+            log_window,
             comp_fig
         ], width={'size': 5}),
         dbc.Col([
@@ -223,19 +219,6 @@ prevent_initial_call=True
 )
 def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l_zips, 
                      l_stores, l_metadata, l_coverage):
-    dropdown_value = paths.l_d_dropdown_map
-    fig = None
-
-    print(f'gen_map_country')
-    print(f'')
-
-    print(f'pdf_d1 [{pdf_d1.shape[0]}]')
-    print(f'pdf_d2={pdf_d2.shape[0]}')
-    # print(f'pdf_stores={pdf_stores.shape[0]}')
-
-
-    print(f'dropdown_value:{dropdown_value}')
-    print(f'')
 
     print(f'country = {l_countries}')
     print(f'state =   {l_states[0:5]}')
@@ -248,29 +231,13 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
     l_fg = []
     d_roi = {}
 
-    #VERBOSITY
     category = paths.l_d_dropdown_map[0]
-    print(f'l_countries={l_countries}')
-
-    print('gdf_world')
-    print(gdf_world)
-    print(gdf_world.columns.to_list())
-
-    pdf_world = gdf_world['ADMIN']
-    print('pdf_world')
-    print(pdf_world)
-    print(f'type={type(pdf_world)}')
-    # print(pdf_world.columns.to_list())
-
-    # pred1 = pdf_world.isin([l_countries])
-    # print(f'pred1={pred1}')
-    # pdf1 = gdf_world[pred1]
-    # print('pdf1')
-    # print(pdf1.shape)
-    # print(f'Countries found={pdf1.shape[0]}')
-
     #VERBOSITY
     if is_logging:
+        pdf_world = gdf_world['ADMIN']
+        print('pdf_world')
+        print(pdf_world)
+        print(f'type={type(pdf_world)}')
         print(f'l_countries={l_countries}')
         pred2 = pdf_world.isin(l_countries)
         print(f'pred2={pred2}')
@@ -282,12 +249,9 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
     
     #COMPANY
     if c_company:
-        # print('Getting Icons')
-        # print(f'{d_company["icon"]}')
-
+        add_log_message(f'Adding company={d_company['name']}')
         pdf_marker_coords = pd.DataFrame.from_dict(d_company['locations'], orient='index')
 
-        print('Adding markers to a feature group')
         fg_company = folium.FeatureGroup(name=d_company['name'])
 
         for index, row in pdf_marker_coords.iterrows():
@@ -302,6 +266,7 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
 
     #COUNTRIES
     if l_countries:
+        add_log_message(f'Changing # of countries={len(l_countries)}')
         fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
                                                         l_countries=l_countries,
                                                         key_filter='ADMIN',
@@ -316,7 +281,7 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         pdf_states = pdf_d1['name']  # For indexing
         pdf = pdf_d1[pdf_states.isin(l_states)]
 
-        print(f'States found={pdf.shape[0]}')
+        add_log_message(f'Changing # of States={len(l_states)}')
         fg_state = f_maps.get_feature_group(pdf, category)
         if fg_state is not None:
             l_fg.append(fg_state)
@@ -326,7 +291,8 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         category = paths.l_d_dropdown_map[2]
         pdf_regions = pdf_d2['NAME_2']  # For indexing
         pdf = pdf_d2[pdf_regions.isin(l_regions)]
-        print(f'Regions found={pdf.shape[0]}')
+        
+        add_log_message(f'Changing # of Region(s)={pdf.shape[0]}')
         fg_region = f_maps.get_feature_group(pdf, category)
         if fg_region is not None:
             l_fg.append(fg_region)
@@ -336,7 +302,8 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         category = paths.l_d_dropdown_map[3]
         pdf_districts = pdf_d3['NAME_3']  # For indexing
         pdf = pdf_d3[pdf_districts.isin(l_districts)]
-        print(f'Districts found={pdf.shape[0]}')
+
+        add_log_message(f'Changing # of District(s)={pdf.shape[0]}')
         fg_district = f_maps.get_feature_group(pdf, category)
         if fg_district is not None:
             l_fg.append(fg_district)
@@ -346,21 +313,17 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         category = paths.l_d_dropdown_map[4]
         pdf_zips = pdf_d4['postcode']  # For indexing
         pdf = pdf_d4[pdf_zips.isin(l_zips)]
-        print(f'l_zips:{l_zips}')
-        print(f'Zips found={pdf.shape[0]}')
+
+        add_log_message(f'Changing # of ZIP(s)={pdf.shape[0]}')
         fg_zip = f_maps.get_feature_group(pdf, category)
         if fg_zip is not None:
             l_fg.append(fg_zip)
 
     #STORES
     if (l_stores):
-        print('Loading stores...')
         pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
-        print(f'pdf_stores.shape[0]={pdf_stores.shape[0]}')
-        print(pdf_stores.head(1))
         pdf = pdf_stores[pdf_stores['store'].isin(l_stores)]
 
-        
         if l_states:
             pdf = pdf[pdf['GADM_1'].isin(l_states)]
         if l_regions:
@@ -368,9 +331,9 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         if l_districts:
             pdf = pdf[pdf['GADM_3'].isin(l_districts)]
 
-        print(f'l_stores:{l_stores}')
-        print(f'Stores total={pdf_stores.shape[0]}')
-        print(f'Stores found={pdf.shape[0]}')
+        add_log_message(f'[STORES] selected [{l_stores}]')
+        add_log_message(f'Total # of Store(s)={pdf_stores.shape[0]}')
+        add_log_message(f'Changing # of Store(s)={pdf.shape[0]}')
         l_fg_stores = f_gadm.get_fg_store(pdf, l_stores)
         if l_fg_stores is not None:
             l_fg.extend(l_fg_stores)
@@ -395,23 +358,22 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
         l_fg_census_quant = f_maps.get_fg_quant(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
                                                 l_quant_ranges=l_quant_ranges, is_logging=is_logging)
 
+        
+
+        add_log_message(f'[POPULATION] #Regions [{gdf_census.shape[0]}]')
         if l_fg_census_quant is not None:
             l_fg.extend(l_fg_census_quant)
 
             gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
-            gdf_census[col_out] = gdf_census[col_out].astype('str')#.drop_duplicates().values
-
-
-            # print('MarketClusters')
-            # fg_mc = f_maps.gen_markercluster_sum_fg(gdf=gdf_map, name='Einwohnerzahl',
-            #                         lat='lat', lon='lon', column_sum = 'EWZ')
-            # if fg_mc is not None:
-            #     l_fg.extend([fg_mc])
+            gdf_census[col_out] = gdf_census[col_out].astype('str')
 
     #COVERAGE
     if(l_coverage):
         path_census_D2 = './assets/Geo/Germany/D1_Deutschland_census.json'
+        radius_km = int(l_coverage)
+        add_log_message(f'Radius [{radius_km} Km]')
         gdf_census_merged = gpd.read_file(path_census_D2)
+        gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
         round_dec=2
         maps_roi_is_roi = True
 
@@ -419,11 +381,11 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
 
         l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
         gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
-        print(f' CENSUS inside RoI: [{gdf_census.shape[0]}]')
+        add_log_message(f' CENSUS inside RoI: [{gdf_census.shape[0]}]')
         gdf_census = f_maps.enrich_census(gdf_census)
 
         pdf_stores = pdf_stores[pdf_stores['store'].isin(l_stores)]                 ### FILTER STORES WITH IN l_stores ###
-        print(f' STORES/Selected [{l_stores}]= {pdf_stores.shape[0]}')
+        add_log_message(f' STORES/Selected [{l_stores}]= {pdf_stores.shape[0]}')
         pdf_stores['geometry'] = pdf_stores['point'].apply(wkt.loads)                  ### CONVERTING POINT COL TO GEOM ###
         gdf_stores = gpd.GeoDataFrame(pdf_stores).set_geometry('geometry')
         gdf_stores = gdf_stores.set_crs(4326)
@@ -438,7 +400,7 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
             fg_roi_pop = round(gdf_census_merged.EWZ.sum() / 10**6, round_dec)
             fg_roi_area = gdf_census_merged.area_geom.sum()
             fg_legend = f'[{len(l_states)}] GEOM/REGIONS [Sum(Pop):{fg_roi_pop}M, Sum(Area):{fg_roi_area}Km2]'
-            print(f'Shape={gdf_census_merged.shape[0]}')
+            add_log_message(f'Shape={gdf_census_merged.shape[0]}')
 
             fg_roi_region = folium.FeatureGroup(name=fg_legend)
             gjson_store = f_maps.get_folium_geojson( gdf_census_merged, 
@@ -465,12 +427,12 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
             l_fg_roi += [fg_roi_town]
 
         if maps_roi_is_stores:
-            print(f'# Stores chain selected:{gdf_stores.shape[0]}')
+            add_log_message(f'  # Stores chain selected:{gdf_stores.shape[0]}')
             fg_mk_storeall = f_gadm.get_fg_store(gdf_stores, l_stores)
             l_fg_roi += fg_mk_storeall
 
         if maps_roi_is_circles:
-            print(f'Shape Circles RoI:{gdf_stores.shape[0]}')
+            add_log_message(f'Shape Circles RoI:{gdf_stores.shape[0]}')
             gdf_circles_stores_all = f_maps.get_gdf_circle(df=gdf_stores, radius_km= radius_km).drop(['point'], axis=1)
             fg_circ_store = f_maps.get_fg_gjson(gdf=gdf_circles_stores_all, fg_name=f'Circles [r={radius_km}Km]',
                                                 fields=['store','name', 'address'],
@@ -518,7 +480,18 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
                         height='750'
                         )
 
-        # im = dash_table.DataTable(pdf_world.to_dict('records'), page_size=10)
+    add_log_message(f'LAYERS [{len(l_fg)}] Time:[{datetime.datetime.now()}]')
+    add_log_message('')
     return map_fig
-    # else:
-    #     return html.Iframe("Empty map!")
+
+@callback(
+    Output("log_display", "children"),
+    Input("interval_component", "n_intervals")
+)
+def update_log_display(n_intervals):
+    log_texts = "\n".join(log_messages)
+    span_logs = html.Span(f"{log_texts} \n[Last update: {datetime.datetime.now()}]")
+    return span_logs
+
+def add_log_message(message):
+    log_messages.append(message)

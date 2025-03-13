@@ -70,11 +70,15 @@ def enrich_census(gdf_census_region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     gdf_census_6993['centroid']= gdf_census_6993['centroid'].to_crs(epsg=4326)
     gdf_census_6993['lat']=gdf_census_6993['centroid'].y
     gdf_census_6993['lon']=gdf_census_6993['centroid'].x
-    gdf_census_6993 = gdf_census_6993.drop(['centroid','BEGINN','WSK'], axis=1)
+    
+    l_col_drop = ['centroid', 'BEGINN', 'WSK']
+    for col in l_col_drop:
+        if col in gdf_census_6993.columns:
+            gdf_census_6993 = gdf_census_6993.drop([col], axis=1)
 
     return gdf_census_6993
 
-def get_folium_map_countries(l_fg: list = None):
+def get_folium_map_countries(l_fg: list = None, d_company: dict = None):
     print()
     print('get_folium_map_countries()')
 
@@ -88,6 +92,24 @@ def get_folium_map_countries(l_fg: list = None):
 
     for fg in l_fg:
         fg.add_to(fm)
+
+    if d_company:
+        print('Getting Icons')
+        print(f'{d_company["icon"]}')
+
+        pdf_marker_coords = pd.DataFrame.from_dict(d_company['locations'], orient='index')
+
+        print('Adding markers to a feature group')
+        fg_markers = folium.FeatureGroup(name=d_company['name'])
+
+        for index, row in pdf_marker_coords.iterrows():
+            folium.Marker(location=[row["lat"], row["lon"]],
+                          popup=row["address"],
+                          tooltip=index,
+                          icon=folium.features.CustomIcon(icon_image=d_company['icon'],
+                                                          icon_size=(50, 50))
+                          ).add_to(fg_markers)
+        fm.add_child(fg_markers)
 
     print('Adding fullscreen')
     fullscreen = folium.plugins.Fullscreen(position='topleft',
