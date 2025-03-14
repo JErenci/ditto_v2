@@ -153,6 +153,22 @@ check_company = dcc.Checklist(
     id='checklist_company',
     options=[d_company['name']]
 )
+check_states = dcc.Checklist(
+    id='checklist_states',
+    options=['All States [DE]']
+)
+check_countries = dcc.Checklist(
+    id='checklist_countries',
+    options=['All countries']
+)
+check_regions = dcc.Checklist(
+    id='checklist_regions',
+    options=['All regions']
+)
+check_districts = dcc.Checklist(
+    id='checklist_districts',
+    options=['All districts']
+)
 log_window = html.Div(
     id="log_display", 
     style=dict(height='300px',overflow='scroll', whiteSpace= 'pre-wrap')
@@ -178,10 +194,34 @@ layout = dbc.Container(
         dbc.Col([
             check_company,      # Checkbox with company locations
             comp_text_Geo,      # Geo component separaton
-            comp_dropCountry,   # COUNTRY
-            comp_dropState,     # STATE
-            comp_dropRegion,    # REGION
-            comp_dropDistrict,  # DISTRICT
+            dbc.Row([
+                dbc.Col([
+                comp_dropCountry], width={'size': 8}), # COUNTRY
+                dbc.Col([
+                check_countries], width={'size': 4}
+                )
+            ], justify='start'),
+            dbc.Row([
+                dbc.Col([
+                comp_dropState], width={'size': 8}), # STATE
+                dbc.Col([
+                check_states], width={'size': 4}
+                )
+            ], justify='start'),
+            dbc.Row([
+                dbc.Col([
+                comp_dropRegion], width={'size': 8}), # REGION
+                dbc.Col([
+                check_regions], width={'size': 4}
+                )
+            ], justify='start'),
+            dbc.Row([
+                dbc.Col([
+                comp_dropDistrict], width={'size': 8}), #DISTRICT
+                dbc.Col([
+                check_districts], width={'size': 4}
+                )
+            ], justify='start'),
             comp_dropZIP,       # ZIP
 
             comp_text_Sales,    # Sales component separaton
@@ -206,6 +246,10 @@ fluid=True,     # Stretch to use all screen
 # Output(component_id='pdf_world_found', component_property='children'),
 Output(component_id='map_figure_right', component_property='children'),
 # Output(component_id='fig_bottom', component_property='children'),
+Input(component_id='checklist_countries', component_property='value'),#All Countries
+Input(component_id='checklist_states', component_property='value'),#All States
+Input(component_id='checklist_regions', component_property='value'),#All Regions
+Input(component_id='checklist_districts', component_property='value'),#All Districts
 Input(component_id='checklist_company', component_property='value'),#Company Locations
 Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
 Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
@@ -217,7 +261,7 @@ Input(component_id='dropdown_metadata', component_property='value'),#Metadata
 Input(component_id='dropdown_coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
 )
-def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l_zips, 
+def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l_countries, l_states, l_regions, l_districts, l_zips, 
                      l_stores, l_metadata, l_coverage):
 
     print(f'country = {l_countries}')
@@ -265,8 +309,16 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
             l_fg.append(fg_company)
 
     #COUNTRIES
-    if l_countries:
-        add_log_message(f'Changing # of countries={len(l_countries)}')
+    if (l_countries or c_countries):
+
+        if c_countries:
+            add_log_message(f'Selecting ALL Countries [{pdf_world.shape[0]}]')
+            pdf = gdf_world
+        else:
+            pred2 = pdf_world.isin(l_countries)
+            add_log_message(f'Changing # of countries={len(l_countries)}')
+            pdf = gdf_world[pred2]
+
         fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
                                                         l_countries=l_countries,
                                                         key_filter='ADMIN',
@@ -276,34 +328,47 @@ def gen_map_countryX(c_company, l_countries, l_states, l_regions, l_districts, l
             l_fg.append(fg_countries)
     
     #STATES
-    if l_states:
+    if (l_states or c_states):
         category = paths.l_d_dropdown_map[1]
         pdf_states = pdf_d1['name']  # For indexing
-        pdf = pdf_d1[pdf_states.isin(l_states)]
 
-        add_log_message(f'Changing # of States={len(l_states)}')
+        if c_states:
+            pdf = pdf_d1
+            add_log_message(f'Selecting ALL =States={pdf_states.shape[0]}')
+        else:
+            pdf = pdf_d1[pdf_states.isin(l_states)]
+            add_log_message(f'Changing # of States={len(l_states)}')
+       
         fg_state = f_maps.get_feature_group(pdf, category)
         if fg_state is not None:
             l_fg.append(fg_state)
 
     #REGION
-    if l_regions:
+    if (l_regions or c_regions):
         category = paths.l_d_dropdown_map[2]
-        pdf_regions = pdf_d2['NAME_2']  # For indexing
-        pdf = pdf_d2[pdf_regions.isin(l_regions)]
+        if c_regions:
+            pdf = pdf_d3
+            add_log_message(f'Selecting all Region(s)={pdf.shape[0]}')
+        else:
+            add_log_message(f'Changing # of Region(s)={pdf.shape[0]}')
+            pdf_regions = pdf_d2['NAME_2']  # For indexing
+            pdf = pdf_d2[pdf_regions.isin(l_regions)]
         
-        add_log_message(f'Changing # of Region(s)={pdf.shape[0]}')
         fg_region = f_maps.get_feature_group(pdf, category)
         if fg_region is not None:
             l_fg.append(fg_region)
 
     #DISTRICT
-    if l_districts:
+    if (l_districts or c_districts):
         category = paths.l_d_dropdown_map[3]
-        pdf_districts = pdf_d3['NAME_3']  # For indexing
-        pdf = pdf_d3[pdf_districts.isin(l_districts)]
+        if c_districts:
+            pdf = pdf_d4
+            add_log_message(f'Selecting all Districts={pdf.shape[0]}')
+        else:
+            pdf_districts = pdf_d3['NAME_3']  # For indexing
+            pdf = pdf_d3[pdf_districts.isin(l_districts)]
+            add_log_message(f'Changing # of District(s)={pdf.shape[0]}')
 
-        add_log_message(f'Changing # of District(s)={pdf.shape[0]}')
         fg_district = f_maps.get_feature_group(pdf, category)
         if fg_district is not None:
             l_fg.append(fg_district)
