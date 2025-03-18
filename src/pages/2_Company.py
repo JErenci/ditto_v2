@@ -14,7 +14,7 @@ from shapely import geometry, wkt
 import sys
 # sys.path.append('/Users/User/PycharmProjects/ditto_v2/')
 # if __name__ == '__main__':
-from functionality_maps import f_maps, f_gadm
+from functionality_maps import f_maps, f_gadm, f_osm
 from functionality_maps import paths
 
 import geopandas as gpd
@@ -130,7 +130,8 @@ comp_dropSales = dcc.Dropdown(
 comp_text_metadata = html.H3('Metadata')
 comp_dropMetadata = dcc.Dropdown(
                 id='dropdown_metadata',
-                options=['EWZ', 'KFL', 'EPK'],
+
+                options=['EWZ', 'Mountains', 'Campings', 'Climbing facilities'],
                 value=[],
                 multi=True,
                 searchable=True,
@@ -405,32 +406,87 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
     #POPULATION
     if (l_metadata):
+        add_log_message(f'l_metadata [{l_metadata}]')
+        if 'EWZ' in l_metadata:
+            add_log_message(f'[POPULATION]')
+            gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
+            l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
+            gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
+            add_log_message(f'[POPULATION] #Regions [{gdf_census.shape[0]}]')
+            l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]   # Define custom quantile boundaries
+            col_quant = 'EPK'
+            col_out='quantile'
+            round_dec = 3
 
-        l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]   # Define custom quantile boundaries
-        col_quant = 'EPK'
-        col_out='quantile'
-        round_dec = 3
+            gdf_census = f_maps.enrich_census(gdf_census)
+            
+            l_quant_ranges = f_maps.compute_quantile_ranges(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
+                                            round_dec=round_dec)  
+            gdf_census = f_maps.add_quantiles_column(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
+                                            round_dec=round_dec, is_logging=is_logging)
+            l_fg_census_quant = f_maps.get_fg_quant(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
+                                                    l_quant_ranges=l_quant_ranges, is_logging=is_logging)
+            
+            if l_fg_census_quant is not None:
+                l_fg.extend(l_fg_census_quant)
 
-        gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
-        l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
-        gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
-        gdf_census = f_maps.enrich_census(gdf_census)
+                gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
+                gdf_census[col_out] = gdf_census[col_out].astype('str')
+        if 'Mountains' in l_metadata:
+            add_log_message(f'[MOUNTAINS]')
+            gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
+            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}]')
+            l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
+            gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
+            
+            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}], l_bundeslaender={l_states}')
+            gdf_cm = gdf_census.groupby('SN_L').agg( \
+            {'EWZ':'sum', 
+            'KFL' : 'sum',
+            'geometry': lambda x: x.geometry.union_all(),
+            }).set_geometry("geometry").set_crs(4326).reset_index()
+            print(f'gdf_head()={gdf_cm.head()}')
+
+            lon_min, lat_min, lon_max, lat_max = gdf_census.union_all().bounds
+            add_log_message(f'lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
+
+            mountains_min_elev = 2500
+            gdf_mountains_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='natural=peak',
+                           l_keys_to_extract = ['name','ele'],
+                           l_values_default = ['', 'nan'],
+                           d_key_replace = {'ele' : {',' : '.', 'm':''}},
+                           d_parse_types = {'lat' : float, 'lon': float, 'ele' : float},
+                           l_drop_na=['lat','lon','ele']
+                           )
+            # Drop columns that are not needed
+            gdf_mountains_bound = gdf_mountains_bound.drop(['nodes','tags'], axis=1)
+            # Intersect with GDF with Region of Interest
+            gdf_mountains = gpd.sjoin(gdf_mountains_bound.to_crs(epsg=4326),
+                                            gdf_cm[['geometry']].to_crs(epsg=4326), 
+                                            how="inner", predicate="intersects")
+            add_log_message(f'[MOUNTAINS] Inside geometry= {gdf_mountains.shape[0]}')
+
+            # # Filter for elevation
+            gdf_mountains = gdf_mountains[gdf_mountains['ele']>=mountains_min_elev]
+            add_log_message(f'[MOUNTAINS] Above min Elev({mountains_min_elev})= {gdf_mountains.shape[0]}')
+
+            if gdf_mountains.shape[0] > 0:
+                fg_mountains = folium.FeatureGroup(name=f'[{gdf_mountains.shape[0]}] Mountains min_elev>{mountains_min_elev}m', show=False)
+                for index, row in gdf_mountains.iterrows():
+                    folium.Marker(location=[row["lat"], row["lon"]],
+                                    popup=f'{row["name"]} \r\n {row["ele"]}m',
+                                    tooltip=row["name"],
+                                    icon=folium.features.CustomIcon(icon_image='assets/Geo/mountain.png',
+                                                                    icon_size=(20, 20))
+                                    ).add_to(fg_mountains)
+                l_fg.extend([fg_mountains])
+
+            #     gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
+            #     gdf_census[col_out] = gdf_census[col_out].astype('str')
+            # d_poi['mountains'] = fg_mountains
+            # l_fg_poi += [fg_mountains]
+
         
-        l_quant_ranges = f_maps.compute_quantile_ranges(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
-                                         round_dec=round_dec)  
-        gdf_census = f_maps.add_quantiles_column(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
-                                        round_dec=round_dec, is_logging=is_logging)
-        l_fg_census_quant = f_maps.get_fg_quant(gdf=gdf_census, col_quant=col_quant, l_quantiles=l_quantiles, 
-                                                l_quant_ranges=l_quant_ranges, is_logging=is_logging)
-
-        
-
-        add_log_message(f'[POPULATION] #Regions [{gdf_census.shape[0]}]')
-        if l_fg_census_quant is not None:
-            l_fg.extend(l_fg_census_quant)
-
-            gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
-            gdf_census[col_out] = gdf_census[col_out].astype('str')
 
     #COVERAGE
     if(l_coverage):
@@ -527,7 +583,7 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
 
         # 3.1. RoI (Region, Towns, Stores) 
-        print(f'# 3.1. RoI (Region, Towns, Stores) ')
+        # print(f'# 3.1. RoI (Region, Towns, Stores) ')
         if bool(d_roi):  ## CHeck that the dict is NOT empty
             for i,fg in enumerate(d_roi['l_fg']):
                 print(f'  Adding RoI [{i+1}/{len(d_roi["l_fg"])}]')
