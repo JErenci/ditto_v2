@@ -452,11 +452,21 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
     #POPULATION
     if (l_metadata):
         add_log_message(f'l_metadata [{l_metadata}]')
+        gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
+        l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
+        gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)] 
+        add_log_message(f' #Regions [{gdf_census.shape[0]}]')
+        gdf_cm = gdf_census.groupby('SN_L').agg( \
+            {'EWZ':'sum', 
+            'KFL' : 'sum',
+            'geometry': lambda x: x.geometry.union_all(),
+            }).set_geometry("geometry").set_crs(4326).reset_index()
+
+        lon_min, lat_min, lon_max, lat_max = gdf_census.union_all().bounds
+        add_log_message(f'lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
+
         if 'EWZ' in l_metadata:
-            add_log_message(f'[POPULATION]')
-            gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
-            l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
-            gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
+            add_log_message(f'[POPULATION]')  #### FILTERING CENSUS TO RoI ####
             add_log_message(f'[POPULATION] #Regions [{gdf_census.shape[0]}]')
             l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]   # Define custom quantile boundaries
             col_quant = 'EPK'
@@ -479,23 +489,13 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
                 gdf_census[col_out] = gdf_census[col_out].astype('str')
         if 'Mountains' in l_metadata:
             add_log_message(f'[MOUNTAINS]')
-            gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
-            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}]')
-            l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
-            gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)]   #### FILTERING CENSUS TO RoI ####
-            
+            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}]')  #### FILTERING CENSUS TO RoI ####
             add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}], l_bundeslaender={l_states}')
-            gdf_cm = gdf_census.groupby('SN_L').agg( \
-            {'EWZ':'sum', 
-            'KFL' : 'sum',
-            'geometry': lambda x: x.geometry.union_all(),
-            }).set_geometry("geometry").set_crs(4326).reset_index()
-            print(f'gdf_head()={gdf_cm.head()}')
+            
 
             lon_min, lat_min, lon_max, lat_max = gdf_census.union_all().bounds
             add_log_message(f'lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
 
-            mountains_min_elev = 2500
             gdf_mountains_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='natural=peak',
                            l_keys_to_extract = ['name','ele'],
                            l_values_default = ['', 'nan'],
@@ -512,6 +512,7 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
             add_log_message(f'[MOUNTAINS] Inside geometry= {gdf_mountains.shape[0]}')
 
             # # Filter for elevation
+            mountains_min_elev = 2500
             gdf_mountains = gdf_mountains[gdf_mountains['ele']>=mountains_min_elev]
             add_log_message(f'[MOUNTAINS] Above min Elev({mountains_min_elev})= {gdf_mountains.shape[0]}')
 
@@ -525,7 +526,40 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
                                                                     icon_size=(20, 20))
                                     ).add_to(fg_mountains)
                 l_fg.extend([fg_mountains])
+        if 'Campings' in l_metadata:
+            add_log_message(f'[CAMPINGS]')
+            gdf_campings_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='tourism=camp_site',
+                        l_keys_to_extract = ['name','tourism','capacity'],
+                        l_values_default = ['','','nan'],
+                        d_key_replace = {'capacity' : {'ab' : '', 'maximal' : '', 'unknown' : 'nan'}},
+                        d_parse_types = {'capacity' : float},
+                        # l_drop_na=['capacity']
+                        )
+            add_log_message(f'  # Campings= {gdf_campings_bound.shape[0]}')
 
+            # Drop columns that are not needed
+            gdf_campings_bound = gdf_campings_bound.drop(['nodes','tags'], axis=1)
+
+            # Intersect with GDF with Region of Interest
+            gdf_campings = gpd.sjoin(gdf_campings_bound.to_crs(epsg=4326),
+                                            gdf_cm[['geometry']].to_crs(epsg=4326), 
+                                            how="inner", predicate="intersects")
+            
+            # Filter
+            campings_min_capacity = 30
+            gdf_campings = gdf_campings[gdf_campings['capacity'] > campings_min_capacity]
+            add_log_message(f'  # Campings with Capacity > {campings_min_capacity} = [{gdf_campings.shape[0]}]')
+            
+            if gdf_campings.shape[0] > 0:
+                fg_campings = folium.FeatureGroup(name=f'[{gdf_campings.shape[0]}] Campings capacity > {campings_min_capacity}', show=False)
+                for index, row in gdf_campings.iterrows():
+                    folium.Marker(location=[row["lat"], row["lon"]],
+                                    popup=row["capacity"],
+                                    tooltip=row["name"],
+                                    icon=folium.features.CustomIcon(icon_image='assets/Geo/camping.png',
+                                                                    icon_size=(25, 25))
+                                    ).add_to(fg_campings)
+                l_fg.extend([fg_campings])
             #     gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
             #     gdf_census[col_out] = gdf_census[col_out].astype('str')
             # d_poi['mountains'] = fg_mountains
