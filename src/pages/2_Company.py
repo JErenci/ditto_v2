@@ -37,13 +37,14 @@ pdf_d1 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[1]])
 pdf_d2 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[2]])
 pdf_d3 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[3]])
 pdf_d4 = f_maps.load_gdf_from_csv(path=paths.csv[paths.l_d_dropdown_map[4]])
+pdf_d5 = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
+pdf_d5 = pdf_d5.drop(['WSK','BEGINN'], axis=1)
 pdf_zips = pdf_d4['postcode']  # For indexing
 
 pdf_d1 = pdf_d1.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
 pdf_d2 = pdf_d2.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
 pdf_d3 = pdf_d3.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
 pdf_d4 = pdf_d4.replace({'Ã¼': 'ü', 'Ã¶':'ö', 'Ã¤':'ä', 'ÃŸ':'ß'}, regex=True) 
-print(f'pdf_d1.shape[0]={pdf_d1.shape[0]}')
 
 ### PDF_STORES ###
 pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
@@ -103,6 +104,17 @@ comp_dropDistrict = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select {paths.l_d_dropdown_map[3]}(s)",
             )
+comp_dropTown = dcc.Dropdown(
+                id='dropdown_town',
+                options=pdf_d5['GEN'].unique(),
+                value=[],
+                multi=True,
+                searchable=True,
+                persistence=False,
+                persistence_type='memory',  # session
+                placeholder=f"Select {paths.l_d_dropdown_map[4]}(s)",
+            )
+
 comp_dropZIP = dcc.Dropdown(
                 id='dropdown_country_filter4',
                 options=pdf_d4['postcode'].unique(),
@@ -111,7 +123,7 @@ comp_dropZIP = dcc.Dropdown(
                 searchable=True,
                 persistence=False,
                 persistence_type='memory',  # session
-                placeholder=f"Select {paths.l_d_dropdown_map[4]}(s)",
+                placeholder=f"Select {paths.l_d_dropdown_map[5]}(s)",
             )
 
 
@@ -156,7 +168,7 @@ check_company = dcc.Checklist(
 )
 check_states = dcc.Checklist(
     id='checklist_states',
-    options=['All States [DE]']
+    options=['All States']
 )
 check_countries = dcc.Checklist(
     id='checklist_countries',
@@ -169,6 +181,10 @@ check_regions = dcc.Checklist(
 check_districts = dcc.Checklist(
     id='checklist_districts',
     options=['All districts']
+)
+check_towns = dcc.Checklist(
+    id='checklist_towns',
+    options=['All Towns']
 )
 log_window = html.Div(
     id="log_display", 
@@ -223,11 +239,18 @@ layout = dbc.Container(
                 check_districts], width={'size': 4}
                 )
             ], justify='start'),
+            dbc.Row([
+                dbc.Col([
+                comp_dropTown], width={'size': 8}), #TOWN
+                dbc.Col([
+                check_towns], width={'size': 4}
+                )
+            ], justify='start'),
             comp_dropZIP,       # ZIP
 
-            comp_text_Sales,    # Sales component separaton
+            comp_text_Sales,     # Sales component separaton
             comp_dropSales,      # Sales
-            comp_text_metadata,  # Metatdata component separation
+            comp_text_metadata,  # Metadata component separation
             comp_dropMetadata,   # Metadata,
             comp_text_coverage,  # Store Coverage text separator
             comp_dropCoverage,   # Store Coverage [Km]
@@ -244,33 +267,28 @@ fluid=True,     # Stretch to use all screen
 )
 
 @callback(
-# Output(component_id='pdf_world_found', component_property='children'),
 Output(component_id='map_figure_right', component_property='children'),
-# Output(component_id='fig_bottom', component_property='children'),
-Input(component_id='checklist_countries', component_property='value'),#All Countries
-Input(component_id='checklist_states', component_property='value'),#All States
-Input(component_id='checklist_regions', component_property='value'),#All Regions
-Input(component_id='checklist_districts', component_property='value'),#All Districts
-Input(component_id='checklist_company', component_property='value'),#Company Locations
+Input(component_id='checklist_countries', component_property='value'),  #All Countries
+Input(component_id='checklist_states', component_property='value'),     #All States
+Input(component_id='checklist_regions', component_property='value'),    #All Regions
+Input(component_id='checklist_districts', component_property='value'),  #All Districts
+Input(component_id='checklist_towns', component_property='value'),      #All Towns
+Input(component_id='checklist_company', component_property='value'),    #Company Locations
 Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
 Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
 Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
 Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
+Input(component_id='dropdown_town', component_property='value'),            #TOWN
 Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
 Input(component_id='dropdown_sales', component_property='value'),#Stores
 Input(component_id='dropdown_metadata', component_property='value'),#Metadata
 Input(component_id='dropdown_coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
 )
-def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l_countries, l_states, l_regions, l_districts, l_zips, 
+def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_company,
+                 l_countries, l_states, l_regions, l_districts, l_towns, l_zips, 
                      l_stores, l_metadata, l_coverage):
 
-    print(f'country = {l_countries}')
-    print(f'state =   {l_states[0:5]}')
-    print(f'region =  {l_regions[0:5]}')
-    print(f'district ={l_districts[0:5]}')
-    print(f'zip =     {l_zips[0:5]}')
-    print(f'')
 
     # Initialize list of feature_groups
     l_fg = []
@@ -281,10 +299,10 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
     if is_logging:
         pdf_world = gdf_world['ADMIN']
         print('pdf_world')
-        print(pdf_world)
-        print(f'type={type(pdf_world)}')
+
         print(f'l_countries={l_countries}')
         pred2 = pdf_world.isin(l_countries)
+
         print(f'pred2={pred2}')
         pdf = gdf_world[pred2]
         print('pdf2')
@@ -294,7 +312,9 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
     
     #COMPANY
     if c_company:
-        add_log_message(f'Adding company={d_company['name']}')
+        section = '[COMPANY]'
+        add_log_message(f'{section}')
+        add_log_message(f'{section} Adding company={d_company['name']}')
         pdf_marker_coords = pd.DataFrame.from_dict(d_company['locations'], orient='index')
 
         fg_company = folium.FeatureGroup(name=d_company['name'])
@@ -311,6 +331,7 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
     #COUNTRIES
     if (l_countries or c_countries):
+        section = '[COUNTRIES/LAND/GADM=1]'
 
         if c_countries:
             add_log_message(f'Selecting ALL Countries [{pdf_world.shape[0]}]')
@@ -330,6 +351,8 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
     
     #STATES
     if (l_states or c_states):
+        section = '[STATES/BUNDESLAND/GADM=2]'
+
         category = paths.l_d_dropdown_map[1]
         pdf_states = pdf_d1['name']  # For indexing
 
@@ -346,6 +369,7 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
     #REGION
     if (l_regions or c_regions):
+        section = '[REGIONS/BEZIRK/GADM=3]'
         category = paths.l_d_dropdown_map[2]
         if c_regions:
             pdf = pdf_d3
@@ -361,6 +385,7 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
     #DISTRICT
     if (l_districts or c_districts):
+        section = '[DISTRICTS/KREIS/GADM=4]'
         category = paths.l_d_dropdown_map[3]
         if c_districts:
             pdf = pdf_d4
@@ -374,9 +399,29 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
         if fg_district is not None:
             l_fg.append(fg_district)
 
+    #TOWNS
+    if (l_towns or c_towns):
+        section = '[TOWNS/GEMEINDE/GADM=5]'
+        category = paths.l_d_dropdown_map[4]
+        add_log_message(f'{section} category={category}')
+        if c_districts:
+            pdf = pdf_d5
+            add_log_message(f'Selecting all Towns={pdf.shape[0]}')
+        else:
+            pdf_towns = pdf_d5['GEN']  # For indexing
+            pdf = pdf_d5[pdf_towns.isin(l_towns)]
+            add_log_message(f'Changing # of Towns(s)={pdf.shape[0]}')
+            print(pdf.dtypes)
+
+        fg_towns = f_maps.get_feature_group(pdf, category)
+        if fg_towns is not None:
+            l_fg.append(fg_towns)
+
     #ZIP
     if(l_zips):
-        category = paths.l_d_dropdown_map[4]
+        
+        section = '[ZIP/PLZ]'
+        category = paths.l_d_dropdown_map[5 ]
         pdf_zips = pdf_d4['postcode']  # For indexing
         pdf = pdf_d4[pdf_zips.isin(l_zips)]
 
@@ -518,6 +563,8 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
         maps_roi_is_circles = True
 
         if maps_roi_is_roi:
+            gdf_census_merged = gdf_census_merged[gdf_census_merged['Bundesland'].isin(l_states)]   #### FILTERING CENSUS TO RoI ####
+            add_log_message(f' CENSUS MERGED inside RoI: [{gdf_census_merged.shape[0]}]')
             fg_roi_pop = round(gdf_census_merged.EWZ.sum() / 10**6, round_dec)
             fg_roi_area = gdf_census_merged.area_geom.sum()
             fg_legend = f'[{len(l_states)}] GEOM/REGIONS [Sum(Pop):{fg_roi_pop}M, Sum(Area):{fg_roi_area}Km2]'
@@ -593,7 +640,7 @@ def gen_map_countryX(c_countries, c_states, c_regions, c_districts, c_company, l
 
         print(f'fm:{fm}, type:{type(fm)}')
 
-    print('Writing map')
+    add_log_message('Writing map')
     name_map = 'map_right'
     f_maps.write_map_temp(fm, name_map=name_map)
     map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),

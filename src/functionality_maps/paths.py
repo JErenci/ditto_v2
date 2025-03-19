@@ -43,15 +43,16 @@ layers_mapbox = [folium.TileLayer(tiles=f'{x}?access_token={mapbox_token}',
 l_tilelayer = layer_openstreet
 new_filed = ' Test '
 
-l_d_dropdown_map = ['Country', 'State', 'Region', 'District', 'Locality']
+l_d_dropdown_map = ['Country', 'State', 'Region', 'District', 'Locality', 'ZIP']
 l_d_dropdown_country = 'Deutschland'
 
 d_map_gadm_name = {
     'D1' : 'Country', 
     'D2' : 'State', 
     'D3' : 'Region', 
-    'D4' : 'District', 
-    'ZIP': 'Locality'
+    'D4' : 'District',
+    'ZIP': 'Locality',
+    'ZIP': 'ZIP'
 }
 # l_d_dropdown_world =   ['DEU', 'ESP', 'ITA', 'CHE', 'USA']
 
@@ -68,7 +69,8 @@ csv = {
     l_d_dropdown_map[1]: f'./assets/Geo/Germany/D2_{l_d_dropdown_country}_{l_d_dropdown_map[1]}_clean.csv',
     l_d_dropdown_map[2]: f'./assets/Geo/Germany/D3_{l_d_dropdown_country}_{l_d_dropdown_map[2]}_clean.csv',
     l_d_dropdown_map[3]: f'./assets/Geo/Germany/D4_{l_d_dropdown_country}_{l_d_dropdown_map[3]}_clean.csv',
-    l_d_dropdown_map[4]: f'./assets/Geo/Germany/ZIP_{l_d_dropdown_country}_{l_d_dropdown_map[4]}_clean.csv'
+    l_d_dropdown_map[4]: f'./assets/Geo/Germany/ZIP_{l_d_dropdown_country}_{l_d_dropdown_map[4]}_clean.csv',
+    # l_d_dropdown_map[5]: f'./assets/Geo/Germany/ZIP_{l_d_dropdown_country}_{l_d_dropdown_map[4]}_clean.csv'
 }
 
 fields = {
@@ -76,7 +78,8 @@ fields = {
     l_d_dropdown_map[1]: ['id','name'],
     l_d_dropdown_map[2]: ['NAME_0','NAME_1', 'NAME_2'],
     l_d_dropdown_map[3]: ['NAME_0', 'NAME_1', 'NAME_2', 'NAME_3'],
-    l_d_dropdown_map[4]: ['postcode', 'locality']
+    l_d_dropdown_map[4]: ['GEN', 'BEZ'],
+    l_d_dropdown_map[5]: ['postcode', 'locality']
 }
 
 aliases = {
@@ -84,5 +87,6 @@ aliases = {
     l_d_dropdown_map[1]: ['ID', 'Bundesland'],
     l_d_dropdown_map[2]: ['Country', 'Bundesland', 'Bezirk'],
     l_d_dropdown_map[3]: ['Country', 'Bundesland', 'Bezirk', 'Kreis'],
-    l_d_dropdown_map[4]: ['Locality/ZIP', 'Name']
+    l_d_dropdown_map[4]: ['Locality', 'Type'],
+    l_d_dropdown_map[5]: ['Locality/ZIP', 'Name']
 }
