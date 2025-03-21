@@ -65,7 +65,7 @@ log_messages = []
 
 comp_text_Geo = html.H3('Geo Data')
 comp_dropCountry = dcc.Dropdown(
-                id='dropdown_country_filter0',
+                id='dropdown_country',
                 options=gdf_world.ADMIN.unique(),
                 value=[],
                 multi=True,
@@ -75,7 +75,7 @@ comp_dropCountry = dcc.Dropdown(
                 placeholder=f"Select {paths.l_d_dropdown_map[0]}",
             )
 comp_dropState = dcc.Dropdown(
-                id='dropdown_country_filter1',
+                id='dropdown_state',
                 options=pdf_d1['name'].unique(),
                 value=[],
                 multi=True,
@@ -85,7 +85,7 @@ comp_dropState = dcc.Dropdown(
                 placeholder=f"Select {paths.l_d_dropdown_map[1]}(s)",
             )
 comp_dropRegion = dcc.Dropdown(
-                id='dropdown_country_filter2',
+                id='dropdown_region',
                 options=pdf_d2['NAME_2'].unique(),
                 value=[],
                 multi=True,
@@ -95,7 +95,7 @@ comp_dropRegion = dcc.Dropdown(
                 placeholder=f"Select {paths.l_d_dropdown_map[2]}(s)",
             )
 comp_dropDistrict = dcc.Dropdown(
-                id='dropdown_country_filter3',
+                id='dropdown_district',
                 options=pdf_d3['NAME_3'].unique(),
                 value=[],
                 multi=True,
@@ -116,7 +116,7 @@ comp_dropTown = dcc.Dropdown(
             )
 
 comp_dropZIP = dcc.Dropdown(
-                id='dropdown_country_filter4',
+                id='dropdown_zip',
                 options=pdf_d4['postcode'].unique(),
                 value=[],
                 multi=True,
@@ -125,8 +125,6 @@ comp_dropZIP = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select {paths.l_d_dropdown_map[5]}(s)",
             )
-
-
 comp_text_Sales = html.H3('Sales Data')
 comp_dropSales = dcc.Dropdown(
                 id='dropdown_sales',
@@ -138,7 +136,6 @@ comp_dropSales = dcc.Dropdown(
                 persistence_type='memory',  # session
                 placeholder=f"Select Store(s)",
             )
-
 comp_text_metadata = html.H3('Metadata')
 comp_dropMetadata = dcc.Dropdown(
                 id='dropdown_metadata',
@@ -274,13 +271,13 @@ Input(component_id='checklist_regions', component_property='value'),    #All Reg
 Input(component_id='checklist_districts', component_property='value'),  #All Districts
 Input(component_id='checklist_towns', component_property='value'),      #All Towns
 Input(component_id='checklist_company', component_property='value'),    #Company Locations
-Input(component_id='dropdown_country_filter0', component_property='value'),#COUNTRY
-Input(component_id='dropdown_country_filter1', component_property='value'),#STATE
-Input(component_id='dropdown_country_filter2', component_property='value'),#REGION
-Input(component_id='dropdown_country_filter3', component_property='value'),#DISTRICT
-Input(component_id='dropdown_town', component_property='value'),            #TOWN
-Input(component_id='dropdown_country_filter4', component_property='value'),#ZIP
-Input(component_id='dropdown_sales', component_property='value'),#Stores
+Input(component_id='dropdown_country', component_property='value'), #COUNTRY
+Input(component_id='dropdown_state', component_property='value'),   #STATE
+Input(component_id='dropdown_region', component_property='value'),  #REGION
+Input(component_id='dropdown_district', component_property='value'),#DISTRICT
+Input(component_id='dropdown_town', component_property='value'),    #TOWN
+Input(component_id='dropdown_zip', component_property='value'),     #ZIP
+Input(component_id='dropdown_sales', component_property='value'),   #Stores
 Input(component_id='dropdown_metadata', component_property='value'),#Metadata
 Input(component_id='dropdown_coverage', component_property='value'),#Store coverage
 prevent_initial_call=True
@@ -332,38 +329,42 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
     #COUNTRIES
     if (l_countries or c_countries):
         section = '[COUNTRIES/LAND/GADM=1]'
+        category = paths.l_d_dropdown_map[0]
 
         if c_countries:
-            add_log_message(f'Selecting ALL Countries [{pdf_world.shape[0]}]')
+            add_log_message(f'{section} Selecting ALL Countries [{pdf_world.shape[0]}]')
             pdf = gdf_world
         else:
             pred2 = pdf_world.isin(l_countries)
-            add_log_message(f'Changing # of countries={len(l_countries)}')
+            add_log_message(f'{section} Changing # of countries={len(l_countries)}')
             pdf = gdf_world[pred2]
 
-        fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
-                                                        l_countries=l_countries,
-                                                        key_filter='ADMIN',
-                                                        fields=paths.fields_wca,
-                                                        aliases=paths.aliases_wca)
+        # fg_countries = f_maps.get_feature_group_countries(gdf_world=pdf,
+        #                                                 l_countries=l_countries,
+        #                                                 key_filter='ADMIN',
+        #                                                 fields=paths.fields_wca,
+        #                                                 aliases=paths.aliases_wca)
+        fg_countries = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_countries)
         if fg_countries is not None:
             l_fg.append(fg_countries)
     
     #STATES
     if (l_states or c_states):
         section = '[STATES/BUNDESLAND/GADM=2]'
-
         category = paths.l_d_dropdown_map[1]
         pdf_states = pdf_d1['name']  # For indexing
 
         if c_states:
             pdf = pdf_d1
-            add_log_message(f'Selecting ALL =States={pdf_states.shape[0]}')
+            add_log_message(f'{section} Selecting ALL =States={pdf_states.shape[0]}')
         else:
             pdf = pdf_d1[pdf_states.isin(l_states)]
-            add_log_message(f'Changing # of States={len(l_states)}')
-       
-        fg_state = f_maps.get_feature_group(pdf, category)
+            add_log_message(f'{section} Changing # of States={len(l_states)}')
+               
+        fg_state = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_state)
+
         if fg_state is not None:
             l_fg.append(fg_state)
 
@@ -373,13 +374,15 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
         category = paths.l_d_dropdown_map[2]
         if c_regions:
             pdf = pdf_d3
-            add_log_message(f'Selecting all Region(s)={pdf.shape[0]}')
+            add_log_message(f'{section} Selecting all Region(s)={pdf.shape[0]}')
         else:
-            add_log_message(f'Changing # of Region(s)={pdf.shape[0]}')
+            add_log_message(f'{section} Changing # of Region(s)={pdf.shape[0]}')
             pdf_regions = pdf_d2['NAME_2']  # For indexing
             pdf = pdf_d2[pdf_regions.isin(l_regions)]
         
-        fg_region = f_maps.get_feature_group(pdf, category)
+        fg_region = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_region)
+        # fg_region = f_maps.get_feature_group(pdf, category)
         if fg_region is not None:
             l_fg.append(fg_region)
 
@@ -389,13 +392,15 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
         category = paths.l_d_dropdown_map[3]
         if c_districts:
             pdf = pdf_d4
-            add_log_message(f'Selecting all Districts={pdf.shape[0]}')
+            add_log_message(f'{section} Selecting all Districts={pdf.shape[0]}')
         else:
             pdf_districts = pdf_d3['NAME_3']  # For indexing
             pdf = pdf_d3[pdf_districts.isin(l_districts)]
-            add_log_message(f'Changing # of District(s)={pdf.shape[0]}')
+            add_log_message(f'{section} Changing # of District(s)={pdf.shape[0]}')
 
-        fg_district = f_maps.get_feature_group(pdf, category)
+        # fg_district = f_maps.get_feature_group(pdf, category)
+        fg_district = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_district)
         if fg_district is not None:
             l_fg.append(fg_district)
 
@@ -406,32 +411,39 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
         add_log_message(f'{section} category={category}')
         if c_districts:
             pdf = pdf_d5
-            add_log_message(f'Selecting all Towns={pdf.shape[0]}')
+            add_log_message(f'{section} Selecting all Towns={pdf.shape[0]}')
         else:
             pdf_towns = pdf_d5['GEN']  # For indexing
             pdf = pdf_d5[pdf_towns.isin(l_towns)]
-            add_log_message(f'Changing # of Towns(s)={pdf.shape[0]}')
+            add_log_message(f'{section} Changing # of Towns(s)={pdf.shape[0]}')
             print(pdf.dtypes)
 
-        fg_towns = f_maps.get_feature_group(pdf, category)
+        # fg_towns = f_maps.get_feature_group(pdf, category)
+        fg_towns = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_towns)
+
         if fg_towns is not None:
             l_fg.append(fg_towns)
 
     #ZIP
     if(l_zips):
+        category = paths.l_d_dropdown_map[5]
         
         section = '[ZIP/PLZ]'
-        category = paths.l_d_dropdown_map[5 ]
         pdf_zips = pdf_d4['postcode']  # For indexing
         pdf = pdf_d4[pdf_zips.isin(l_zips)]
 
-        add_log_message(f'Changing # of ZIP(s)={pdf.shape[0]}')
-        fg_zip = f_maps.get_feature_group(pdf, category)
+        add_log_message(f'{section} Changing # of ZIP(s)={pdf.shape[0]}')
+        # fg_zip = f_maps.get_feature_group(pdf, category)
+        fg_zip = folium.FeatureGroup(name=f'{section} [{pdf.shape[0]}]')
+        f_maps.get_folium_geojson( pdf, fields=paths.fields[category],aliases = paths.aliases[category]).add_to(fg_zip)
+
         if fg_zip is not None:
             l_fg.append(fg_zip)
 
     #STORES
     if (l_stores):
+        section = '[STORES]'
         pdf_stores = pd.read_json(paths.stores, orient='records', lines=True)
         pdf = pdf_stores[pdf_stores['store'].isin(l_stores)]
 
@@ -442,20 +454,21 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
         if l_districts:
             pdf = pdf[pdf['GADM_3'].isin(l_districts)]
 
-        add_log_message(f'[STORES] selected [{l_stores}]')
-        add_log_message(f'Total # of Store(s)={pdf_stores.shape[0]}')
-        add_log_message(f'Changing # of Store(s)={pdf.shape[0]}')
+        add_log_message(f'{section} selected [{l_stores}]')
+        add_log_message(f'{section} Total # of Store(s)={pdf_stores.shape[0]}')
+        add_log_message(f'{section} Changing # of Store(s)={pdf.shape[0]}')
         l_fg_stores = f_gadm.get_fg_store(pdf, l_stores)
         if l_fg_stores is not None:
             l_fg.extend(l_fg_stores)
 
-    #POPULATION
+    #METADATA
     if (l_metadata):
-        add_log_message(f'l_metadata [{l_metadata}]')
+        section = 'METADATA'
+        add_log_message(f'{section} [{l_metadata}]')
         gdf_census = gpd.read_file('.\JupNB\DE_Data\VG250_GEM_WGS84.shp')
         l_bundeslaender = [Defs.dict_bundeslaender_id[x] for x in l_states]
         gdf_census = gdf_census[gdf_census['SN_L'].isin(l_bundeslaender)] 
-        add_log_message(f' #Regions [{gdf_census.shape[0]}]')
+        add_log_message(f'{section} #Regions [{gdf_census.shape[0]}]')
         gdf_cm = gdf_census.groupby('SN_L').agg( \
             {'EWZ':'sum', 
             'KFL' : 'sum',
@@ -463,11 +476,13 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
             }).set_geometry("geometry").set_crs(4326).reset_index()
 
         lon_min, lat_min, lon_max, lat_max = gdf_census.union_all().bounds
-        add_log_message(f'lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
+        add_log_message(f'{section} lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
 
+        # POPULATION
         if 'EWZ' in l_metadata:
-            add_log_message(f'[POPULATION]')  #### FILTERING CENSUS TO RoI ####
-            add_log_message(f'[POPULATION] #Regions [{gdf_census.shape[0]}]')
+            section = '[METADATA/POPULATION]'
+            add_log_message(f'{section}')  #### FILTERING CENSUS TO RoI ####
+            add_log_message(f'{section} #Regions [{gdf_census.shape[0]}]')
             l_quantiles = [0, 0.1, 0.5, 0.9, 1.0]   # Define custom quantile boundaries
             col_quant = 'EPK'
             col_out='quantile'
@@ -487,14 +502,15 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
 
                 gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
                 gdf_census[col_out] = gdf_census[col_out].astype('str')
+        # MOUNTAINS
         if 'Mountains' in l_metadata:
-            add_log_message(f'[MOUNTAINS]')
-            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}]')  #### FILTERING CENSUS TO RoI ####
-            add_log_message(f'[MOUNTAINS] #Regions [{gdf_census.shape[0]}], l_bundeslaender={l_states}')
+            section = '[METADATA/MOUNTAINS]'
+            add_log_message(f'{section} #Regions [{gdf_census.shape[0]}]')  #### FILTERING CENSUS TO RoI ####
+            add_log_message(f'{section} #Regions [{gdf_census.shape[0]}], l_bundeslaender={l_states}')
             
 
             lon_min, lat_min, lon_max, lat_max = gdf_census.union_all().bounds
-            add_log_message(f'lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
+            add_log_message(f'{section} lon_min, lat_min, lon_max, lat_max = {lon_min, lat_min, lon_max, lat_max}')
 
             gdf_mountains_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='natural=peak',
                            l_keys_to_extract = ['name','ele'],
@@ -509,12 +525,12 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
             gdf_mountains = gpd.sjoin(gdf_mountains_bound.to_crs(epsg=4326),
                                             gdf_cm[['geometry']].to_crs(epsg=4326), 
                                             how="inner", predicate="intersects")
-            add_log_message(f'[MOUNTAINS] Inside geometry= {gdf_mountains.shape[0]}')
+            add_log_message(f'{section} Inside geometry= {gdf_mountains.shape[0]}')
 
             # # Filter for elevation
             mountains_min_elev = 2500
             gdf_mountains = gdf_mountains[gdf_mountains['ele']>=mountains_min_elev]
-            add_log_message(f'[MOUNTAINS] Above min Elev({mountains_min_elev})= {gdf_mountains.shape[0]}')
+            add_log_message(f'{section} Above min Elev({mountains_min_elev})= {gdf_mountains.shape[0]}')
 
             if gdf_mountains.shape[0] > 0:
                 fg_mountains = folium.FeatureGroup(name=f'[{gdf_mountains.shape[0]}] Mountains min_elev>{mountains_min_elev}m', show=False)
@@ -526,8 +542,10 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
                                                                     icon_size=(20, 20))
                                     ).add_to(fg_mountains)
                 l_fg.extend([fg_mountains])
+        # CAMPINGS
         if 'Campings' in l_metadata:
-            add_log_message(f'[CAMPINGS]')
+            section = '[METADATA/CAMPINGS]'
+            add_log_message(f'{section}')
             gdf_campings_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='tourism=camp_site',
                         l_keys_to_extract = ['name','tourism','capacity'],
                         l_values_default = ['','','nan'],
@@ -535,7 +553,7 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
                         d_parse_types = {'capacity' : float},
                         # l_drop_na=['capacity']
                         )
-            add_log_message(f'  # Campings= {gdf_campings_bound.shape[0]}')
+            add_log_message(f'{section} # Campings= {gdf_campings_bound.shape[0]}')
 
             # Drop columns that are not needed
             gdf_campings_bound = gdf_campings_bound.drop(['nodes','tags'], axis=1)
@@ -548,7 +566,7 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
             # Filter
             campings_min_capacity = 30
             gdf_campings = gdf_campings[gdf_campings['capacity'] > campings_min_capacity]
-            add_log_message(f'  # Campings with Capacity > {campings_min_capacity} = [{gdf_campings.shape[0]}]')
+            add_log_message(f'{section} # Campings with Capacity > {campings_min_capacity} = [{gdf_campings.shape[0]}]')
             
             if gdf_campings.shape[0] > 0:
                 fg_campings = folium.FeatureGroup(name=f'[{gdf_campings.shape[0]}] Campings capacity > {campings_min_capacity}', show=False)
@@ -560,12 +578,40 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
                                                                     icon_size=(25, 25))
                                     ).add_to(fg_campings)
                 l_fg.extend([fg_campings])
-            #     gdf_census = gdf_census.sort_values(by=col_quant, ascending=True)
-            #     gdf_census[col_out] = gdf_census[col_out].astype('str')
-            # d_poi['mountains'] = fg_mountains
-            # l_fg_poi += [fg_mountains]
+        ### CLIMBINGS ###
+        if 'Climbing facilities' in l_metadata:
+            section = f'[METADATA/CLIMBINGS]'
+            add_log_message(f'{section}')
+            # Extract from OSM
+            gdf_climbings_bound = f_osm.gen_pdf_osm(lat_min, lon_min, lat_max, lon_max, args='sport=climbing',
+                                    l_keys_to_extract = ['name','climbing','natural','website','addr:city'],
+                                    l_values_default = ['','','','nan',''],
+                                    # d_key_replace = {'capacity' : {'ab' : '', 'maximal' : ''}},
+                                    # d_parse_types = {'capacity' : float},
+                                    l_drop_na=['website']
+                                    )
+            # Drop columns that are not needed
+            gdf_climbings_bound = gdf_climbings_bound.drop(['nodes','tags'], axis=1)
+            # Intersect with GDF with Region of Interest
+            gdf_climbings = gpd.sjoin(gdf_climbings_bound.to_crs(epsg=4326),
+                                            gdf_cm[['geometry']].to_crs(epsg=4326), 
+                                            how="inner", predicate="intersects")
 
-        
+            # Filter
+            print(f'{section} # of Climbing facilities= {gdf_climbings.shape[0]}')
+
+            # Feature Group
+            
+            if gdf_climbings.shape[0]:
+                fg_climb = folium.FeatureGroup(name=f' [{gdf_climbings.shape[0]}] Climb Facilities', show=False)
+                for index, row in gdf_climbings.iterrows():
+                    folium.Marker(location=[row["lat"], row["lon"]],
+                                    popup=row["website"],
+                                    tooltip=row["name"],
+                                    icon=folium.features.CustomIcon(icon_image='assets/Geo/climbing_no_rope.png',
+                                                                    icon_size=(25, 25))
+                                    ).add_to(fg_climb)
+                l_fg.extend([fg_climb])
 
     #COVERAGE
     if(l_coverage):

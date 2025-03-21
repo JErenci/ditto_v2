@@ -74,7 +74,8 @@ csv = {
 }
 
 fields = {
-    l_d_dropdown_map[0]: ['ISO','NAME_ENGLI'],
+    # l_d_dropdown_map[0]: ['ISO','NAME_ENGLI'],
+    l_d_dropdown_map[0]: ['ISO_A3','ADMIN', 'Area_total_km2'],
     l_d_dropdown_map[1]: ['id','name'],
     l_d_dropdown_map[2]: ['NAME_0','NAME_1', 'NAME_2'],
     l_d_dropdown_map[3]: ['NAME_0', 'NAME_1', 'NAME_2', 'NAME_3'],
@@ -83,7 +84,7 @@ fields = {
 }
 
 aliases = {
-    l_d_dropdown_map[0]: ['Code', 'Country'],
+    l_d_dropdown_map[0]: ['Code', 'Country', 'Area[km2]'],
     l_d_dropdown_map[1]: ['ID', 'Bundesland'],
     l_d_dropdown_map[2]: ['Country', 'Bundesland', 'Bezirk'],
     l_d_dropdown_map[3]: ['Country', 'Bundesland', 'Bezirk', 'Kreis'],
