@@ -409,7 +409,7 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
         section = '[TOWNS/GEMEINDE/GADM=5]'
         category = paths.l_d_dropdown_map[4]
         add_log_message(f'{section} category={category}')
-        if c_districts:
+        if c_towns:
             pdf = pdf_d5
             add_log_message(f'{section} Selecting all Towns={pdf.shape[0]}')
         else:
@@ -723,12 +723,12 @@ def gen_map_rich(c_countries, c_states, c_regions, c_districts, c_towns, c_compa
     add_log_message('Writing map')
     name_map = 'map_right'
     f_maps.write_map_temp(fm, name_map=name_map)
-    map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r").read(),
+    map_fig = html.Iframe(srcDoc=open(f"{name_map}.txt", "r" ).read(),
                         width='100%',
                         height='750'
                         )
 
-    add_log_message(f'LAYERS [{len(l_fg)}] Time:[{datetime.datetime.now()}]')
+    add_log_message(f'LAYERS[{len(l_fg)}] Time:[{datetime.datetime.now()}]')
     add_log_message('')
     return map_fig
 
